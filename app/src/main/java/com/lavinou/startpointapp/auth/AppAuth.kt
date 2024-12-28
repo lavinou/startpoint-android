@@ -3,7 +3,6 @@ package com.lavinou.startpointapp.auth
 import android.content.Context
 import com.lavinou.startpoint.StartPointConfiguration
 import com.lavinou.startpoint.auth.SPAuth
-import com.lavinou.startpoint.auth.SPAuthUserSession
 import com.lavinou.startpoint.auth.password.Password
 import com.lavinou.startpoint.auth.password.navigation.PasswordSignIn
 import com.lavinou.startpoint.auth.password.navigation.PasswordSignUp
@@ -85,14 +84,16 @@ fun StartPointConfiguration.installAuth(
 
     }
 
+    val domain = "192.168.1.226"
+
     val passwordBackend = DefaultPasswordSPAuthBackend(
         client = client,
-        baseUrl = "http://192.168.1.125:8000"
+        baseUrl = "http://$domain:8000"
     )
 
     val userSessionBackend = AppUserSessionBackend(
         client = client,
-        baseUrl = "http://192.168.1.125:8000"
+        baseUrl = "http://$domain:8000"
     )
 
     install(SPAuth) {
