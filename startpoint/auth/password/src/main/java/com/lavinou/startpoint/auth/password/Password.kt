@@ -37,10 +37,9 @@ class Password(
         val effect = passwordViewModel.effect.collectAsState()
 
         LaunchedEffect(key1 = effect.value, block = {
-            val effect = effect.value
-            when (effect) {
+            when (val result = effect.value) {
                 is PasswordEffect.OnSuccess -> {
-                    _onSuccess?.invoke(effect.token)
+                    _onSuccess?.invoke(result.token)
                     passwordViewModel.dispatch(PasswordAction.ResetForm)
 
                 }

@@ -1,15 +1,16 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.serialization")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
     namespace = "com.lavinou.startpoint"
-    compileSdk = 34
+    compileSdk = libs.versions.compile.sdk.get().toInt()
 
     defaultConfig {
-        minSdk = 28
+        minSdk = libs.versions.min.sdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -29,32 +30,31 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = libs.versions.jvm.target.get()
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = libs.versions.kotlin.compiler.extension.get()
     }
 }
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.activity:activity-compose:1.9.3")
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.navigation:navigation-compose:2.8.4")
-    implementation("androidx.navigation:navigation-runtime-ktx:2.8.4")
-    implementation("com.google.android.material:material:1.12.0")
-    // serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    implementation(libs.core.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.activity.compose)
+
+
+    implementation(platform(libs.compose.bom))
+    implementation(libs.bundles.compose)
+    implementation(libs.bundles.navigation)
+    implementation(libs.google.material)
+
+    implementation(libs.kotlinx.serialization)
+
+    debugImplementation(libs.compose.ui.tooling)
+    testImplementation(libs.bundles.test)
+    androidTestImplementation(libs.bundles.android.test)
 }

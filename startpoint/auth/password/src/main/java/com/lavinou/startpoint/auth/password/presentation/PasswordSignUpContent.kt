@@ -113,7 +113,7 @@ internal fun PasswordSignUpContent(
             Button(
                 onClick = {
                     scope.launch {
-                        credentialManager?.createCredential(
+                        credentialManager.createCredential(
                             context = context,
                             request = CreatePasswordRequest(
                                 id = state.email,

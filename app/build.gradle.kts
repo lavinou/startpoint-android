@@ -1,17 +1,18 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.serialization")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
     namespace = "com.lavinou.startpointapp"
-    compileSdk = 35
+    compileSdk = libs.versions.compile.sdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.lavinou.startpointapp"
-        minSdk = 28
-        targetSdk = 33
+        minSdk = libs.versions.min.sdk.get().toInt()
+        targetSdk = libs.versions.target.sdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
 
@@ -35,13 +36,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = libs.versions.jvm.target.get()
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = libs.versions.kotlin.compiler.extension.get()
     }
     packaging {
         resources {
@@ -58,29 +59,24 @@ dependencies {
     implementation(project(":startpoint:auth:passkey"))
 
     // serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation(libs.kotlinx.serialization)
 
     // api
-    implementation("io.ktor:ktor-client-core:2.3.11")
-    implementation("io.ktor:ktor-client-cio:2.3.11")
-    implementation("io.ktor:ktor-client-auth:2.3.11")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.11")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.11")
+    implementation(libs.bundles.networking)
+
+    implementation(libs.core.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.activity.compose)
 
 
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
-    implementation("androidx.activity:activity-compose:1.9.3")
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.navigation:navigation-compose:2.8.4")
-    implementation("androidx.navigation:navigation-runtime-ktx:2.8.4")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    implementation(platform(libs.compose.bom))
+    implementation(libs.bundles.compose)
+    implementation(libs.bundles.navigation)
+    implementation(libs.google.material)
+
+    debugImplementation(libs.compose.ui.tooling)
+    testImplementation(libs.bundles.test)
+    androidTestImplementation(libs.bundles.android.test)
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")

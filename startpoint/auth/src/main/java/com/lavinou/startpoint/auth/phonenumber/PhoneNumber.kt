@@ -50,7 +50,7 @@ class PhoneNumber {
             get() = AttributeKey("PhoneNumber")
 
         override val graph: NavGraphBuilder.(NavHostController) -> Unit
-            get() = { navHostController ->
+            get() = { _ ->
                 currentScope?.let {
 //                    password(
 //                        startPointAuth = it,

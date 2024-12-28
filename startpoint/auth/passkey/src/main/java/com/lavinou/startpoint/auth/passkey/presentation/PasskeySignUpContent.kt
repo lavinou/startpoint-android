@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
@@ -58,7 +59,7 @@ internal fun PasskeySignUpContent(
             modifier = Modifier.fillMaxWidth()
         ) {
             Icon(
-                imageVector = Icons.Default.ArrowBack,
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "back-arrow",
                 modifier = Modifier.clickable {
                     navHostController.popBackStack()
@@ -90,8 +91,8 @@ internal fun PasskeySignUpContent(
                 trailingIcon = {
                     Icon(imageVector = Icons.Default.Person, contentDescription = "email-icon")
                 },
-                colors = TextFieldDefaults.textFieldColors(
-                    textColor = Color.Gray,
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = Color.Gray,
                     disabledTextColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
@@ -116,8 +117,8 @@ internal fun PasskeySignUpContent(
                 trailingIcon = {
                     Icon(imageVector = Icons.Default.Email, contentDescription = "email-icon")
                 },
-                colors = TextFieldDefaults.textFieldColors(
-                    textColor = Color.Gray,
+                colors = TextFieldDefaults.colors(
+                    focusedTextColor = Color.Gray,
                     disabledTextColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,

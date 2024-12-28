@@ -1,14 +1,15 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
     namespace = "com.lavinou.startpoint.auth.core_ui"
-    compileSdk = 35
+    compileSdk = libs.versions.compile.sdk.get().toInt()
 
     defaultConfig {
-        minSdk = 28
+        minSdk = libs.versions.min.sdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -28,37 +29,35 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = libs.versions.jvm.target.get()
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = libs.versions.kotlin.compiler.extension.get()
     }
 }
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.activity:activity-compose:1.9.3")
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.navigation:navigation-compose:2.8.4")
-    implementation("androidx.navigation:navigation-runtime-ktx:2.8.4")
-    implementation("com.google.android.material:material:1.12.0")
-    debugImplementation("androidx.compose.ui:ui-tooling")
+    implementation(libs.core.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.activity.compose)
+
+
+    implementation(platform(libs.compose.bom))
+    implementation(libs.bundles.compose)
+    implementation(libs.bundles.navigation)
+    implementation(libs.google.material)
 
     //Credentials
-    implementation("androidx.credentials:credentials:1.5.0-beta01")
-    implementation("androidx.credentials:credentials-play-services-auth:1.5.0-beta01")
+    api(libs.bundles.credentials)
 
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    // serialization
+    implementation(libs.kotlinx.serialization)
+
+    debugImplementation(libs.compose.ui.tooling)
+    testImplementation(libs.bundles.test)
+    androidTestImplementation(libs.bundles.android.test)
 }

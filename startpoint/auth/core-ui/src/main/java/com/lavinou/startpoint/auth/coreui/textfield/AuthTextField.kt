@@ -42,8 +42,8 @@ fun AuthTextField(
             shape = MaterialTheme.shapes.extraLarge,
             trailingIcon = trailingIcon,
             leadingIcon = leadingIcon,
-            colors = TextFieldDefaults.textFieldColors(
-                textColor = Color.Gray,
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = Color.Gray,
                 disabledTextColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
