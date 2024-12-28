@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.lavinou.startpoint.attribute.AttributeKey
-import com.lavinou.startpoint.auth.SPAuthProvider
 import com.lavinou.startpoint.auth.SPAuth
+import com.lavinou.startpoint.auth.SPAuthProvider
 import com.lavinou.startpoint.auth.passkey.navigation.passkey
 import com.lavinou.startpoint.auth.passkey.presentation.PasskeySignUpContent
 import com.lavinou.startpoint.dsl.StartPointDsl

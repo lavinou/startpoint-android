@@ -10,8 +10,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.lavinou.startpoint.attribute.AttributeKey
-import com.lavinou.startpoint.auth.SPAuthProvider
 import com.lavinou.startpoint.auth.SPAuth
+import com.lavinou.startpoint.auth.SPAuthProvider
 import com.lavinou.startpoint.dsl.StartPointDsl
 
 class FaceBook {
@@ -30,7 +30,7 @@ class FaceBook {
     }
 
     @StartPointDsl
-    companion object Plugin: SPAuthProvider<FaceBookConfiguration, FaceBook> {
+    companion object Plugin : SPAuthProvider<FaceBookConfiguration, FaceBook> {
 
         private var currentPlugin: FaceBook? = null
 

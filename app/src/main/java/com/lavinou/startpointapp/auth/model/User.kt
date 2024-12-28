@@ -9,7 +9,7 @@ data class User(
     val username: String
 )
 
-sealed interface AppUser: SPAuthUser<Any> {
+sealed interface AppUser : SPAuthUser<Any> {
 
     data class AuthenticatedUser(
         override val id: String,
@@ -25,7 +25,7 @@ sealed interface AppUser: SPAuthUser<Any> {
 
     val user: User?
         get() {
-            return when(this) {
+            return when (this) {
                 is AuthenticatedUser -> this.value
                 is AnonymousUser -> null
             }

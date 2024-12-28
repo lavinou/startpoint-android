@@ -6,9 +6,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.lavinou.startpoint.navigation.StartPointNavHost
 
 
@@ -16,10 +13,7 @@ import com.lavinou.startpoint.navigation.StartPointNavHost
 @Composable
 fun StartPointScaffold(
     startPoint: StartPoint,
-    navHostController: NavHostController = rememberNavController(),
-    route: String = "home",
-    startDestination: String = "home-main",
-    content: NavGraphBuilder.() -> Unit
+    content: @Composable () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -31,14 +25,11 @@ fun StartPointScaffold(
     ) { paddingValues ->
         CompositionLocalProvider(LocalStartPoint provides startPoint) {
             StartPointNavHost(
-                route = route,
-                startDestination = startDestination,
                 graphs = startPoint.installedPlugins.map { it.graph },
-                navHostController = navHostController,
+                navHostController = startPoint.navigation,
                 modifier = Modifier.padding(paddingValues),
-                builder = content
+                content = content
             )
         }
-
     }
 }

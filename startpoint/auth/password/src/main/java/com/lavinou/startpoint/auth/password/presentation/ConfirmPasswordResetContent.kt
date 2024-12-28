@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.lavinou.startpoint.auth.coreui.header.AuthHeader
 import com.lavinou.startpoint.auth.coreui.textfield.AuthTextField
-import com.lavinou.startpoint.auth.password.Password
 
 @Composable
 internal fun ConfirmPasswordResetContent(

@@ -8,16 +8,16 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.lavinou.startpoint.AndroidStartPoint
 import com.lavinou.startpoint.StartPointScaffold
-import com.lavinou.startpoint.auth.userSession
 import com.lavinou.startpoint.auth.navigation.StartPointAuthRoute
+import com.lavinou.startpoint.auth.userSession
+import com.lavinou.startpoint.rememberStartPoint
 import com.lavinou.startpointapp.auth.installAuth
 import com.lavinou.startpointapp.auth.model.AppUser
 import com.lavinou.startpointapp.ui.theme.StartPointAppTheme
@@ -30,13 +30,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navHostController = rememberNavController()
             val scope = rememberCoroutineScope()
-            val startPoint = remember {
-                AndroidStartPoint {
-                    installAuth(this@MainActivity) {
-                        navHostController.popBackStack("home-main", inclusive = false)
-                    }
-
-                }
+            val startPoint = rememberStartPoint {
+                installAuth(this@MainActivity)
             }
 
             val userSession = startPoint.userSession<AppUser>()
@@ -44,33 +39,49 @@ class MainActivity : ComponentActivity() {
 
             StartPointAppTheme {
                 // A surface container using the 'background' color from the theme
-                StartPointScaffold(startPoint = startPoint, navHostController = navHostController) {
-                    composable(route = "home-main") {
-                        when(status.value) {
-                            is AppUser.AuthenticatedUser -> {
-                                Column {
-                                    Text(text = "Hello ${status.value.user?.username}")
-                                    Button(onClick = {
-                                        scope.launch {
-                                            userSession.logout()
+                StartPointScaffold(
+                    startPoint = startPoint
+                ) {
+                    NavHost(navHostController, startDestination = "home-main", route = "home") {
+                        composable(route = "home-main") {
+                            when (status.value) {
+                                is AppUser.AuthenticatedUser -> {
+                                    Column {
+                                        Text(text = "Hello ${status.value.user?.username}")
+                                        Button(onClick = {
+                                            scope.launch {
+                                                userSession.logout()
+                                            }
+                                        }) {
+                                            Text(text = "Logout")
                                         }
-                                    }) {
-                                        Text(text = "Logout")
                                     }
                                 }
-                            }
-                            is AppUser.AnonymousUser -> {
-                                Column {
-                                    Text(text = "Hello World")
-                                    Button(onClick = {
-                                        navHostController.navigate(StartPointAuthRoute)
-                                    }) {
-                                        Text(text = "Go to Auth")
+
+                                is AppUser.AnonymousUser -> {
+                                    Column {
+                                        Text(text = "Hello World")
+                                        Button(onClick = {
+                                            startPoint.navigation.navigate(StartPointAuthRoute)
+                                        }) {
+                                            Text(text = "Go to Auth")
+                                        }
                                     }
                                 }
                             }
                         }
+                        composable(route = "test") {
+                            Column {
+                                Text("This is for testing")
+                                Button(onClick = {
+                                    startPoint.navigation.navigate(StartPointAuthRoute)
+                                }) {
+                                    Text(text = "Go to Auth")
+                                }
+                            }
+                        }
                     }
+
                 }
             }
         }

@@ -35,8 +35,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.lavinou.startpoint.auth.SPAuth
 import com.lavinou.startpoint.auth.SPAuthConfiguration
-import com.lavinou.startpoint.auth.passkey.Passkey
 import com.lavinou.startpoint.auth.containsAnyBut
+import com.lavinou.startpoint.auth.passkey.Passkey
 import com.lavinou.startpoint.auth.passkey.navigation.PasskeyOtherWaysToSignUp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -160,12 +160,13 @@ internal fun PasskeySignUpContent(
                         modifier = Modifier.size(48.dp)
                     )
                 }
-                if(startPointAuth.containsAnyBut(Passkey)) {
+                if (startPointAuth.containsAnyBut(Passkey)) {
                     Text(
                         text = "Other ways to sign in",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(vertical = 8.dp)
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
                             .clickable {
                                 navHostController.navigate(PasskeyOtherWaysToSignUp)
                             }

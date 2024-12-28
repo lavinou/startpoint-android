@@ -5,26 +5,29 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.composable
+import kotlinx.serialization.Serializable
+
+@Serializable
+object MainContent
 
 @Composable
 internal fun StartPointNavHost(
-    route: String,
-    startDestination: String,
     graphs: List<NavGraphBuilder.(NavHostController) -> Unit> = emptyList(),
-    navHostController: NavHostController = rememberNavController(),
+    navHostController: NavHostController,
     modifier: Modifier = Modifier,
-    builder: NavGraphBuilder.() -> Unit
+    content: @Composable () -> Unit
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = startDestination,
-        route = route,
+        startDestination = MainContent,
         modifier = modifier
     ) {
-        graphs.forEach {
-            it(navHostController)
+
+        composable<MainContent> {
+            content()
         }
-        builder()
+
+        graphs.forEach { it(navHostController) }
     }
 }

@@ -22,8 +22,6 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -33,10 +31,10 @@ data class RefreshToken(
 )
 
 fun StartPointConfiguration.installAuth(
-    context: Context,
-    onSuccess: () -> Unit
+    context: Context
 ) {
 
+    val domain = "192.168.1.226"
     val appStorage = DefaultSPAuthStorage(context)
 
     val client: HttpClient = HttpClient(CIO) {
@@ -66,7 +64,7 @@ fun StartPointConfiguration.installAuth(
                         headers {
                             header("Content-Type", "application/json")
                         }
-                        url("http://192.168.1.125:8000/account/token/refresh/")
+                        url("http://$domain:8000/account/token/refresh/")
                         setBody(
                             mapOf(
                                 "refresh" to token.refreshToken
@@ -84,8 +82,6 @@ fun StartPointConfiguration.installAuth(
 
     }
 
-    val domain = "192.168.1.226"
-
     val passwordBackend = DefaultPasswordSPAuthBackend(
         client = client,
         baseUrl = "http://$domain:8000"
@@ -101,12 +97,6 @@ fun StartPointConfiguration.installAuth(
         title = "Welcome"
         signInButtonRoute = PasswordSignIn
         signUpButtonRoute = PasswordSignUp
-
-        onComplete = { user ->
-            withContext(Dispatchers.Main) {
-                onSuccess()
-            }
-        }
 
         setStorage(appStorage)
         setUserSessionBackend(userSessionBackend)

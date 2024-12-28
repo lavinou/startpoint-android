@@ -1,10 +1,10 @@
 package com.lavinou.startpoint
 
-import android.content.Context
+import androidx.navigation.NavHostController
 import com.lavinou.startpoint.attribute.Attributes
-import com.lavinou.startpoint.dsl.StartPointDsl
 
-class AndroidStartPoint constructor(
+class AndroidStartPoint(
+    private val navHostController: NavHostController,
     configuration: StartPointConfiguration.() -> Unit
 ) : StartPoint {
 
@@ -15,6 +15,9 @@ class AndroidStartPoint constructor(
     override val attributes: Attributes = Attributes(concurrent = true)
 
     override val installedPlugins: List<StartPointPlugin<*, *>> = _installedPlugins
+
+    override val navigation: NavHostController
+        get() = navHostController
 
     init {
         configuration.invoke(config)

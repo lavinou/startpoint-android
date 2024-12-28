@@ -11,7 +11,10 @@ import com.lavinou.startpoint.auth.backend.SPAuthenticationBackend
 import com.lavinou.startpoint.auth.backend.model.SPAuthToken
 import com.lavinou.startpoint.auth.navigation.auth
 import com.lavinou.startpoint.dsl.StartPointDsl
+import com.lavinou.startpoint.navigation.MainContent
 import com.lavinou.startpoint.plugin
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class SPAuth(
     val title: String,
@@ -25,9 +28,9 @@ class SPAuth(
 
     val installedProvider: MutableList<SPAuthProvider<*, *>> = mutableListOf()
 
+    private var _onComplete: (suspend () -> Unit)? = null
     val onComplete: (suspend (SPAuthToken) -> Unit)?
         get() {
-
             return config.onComplete
         }
 
@@ -44,11 +47,16 @@ class SPAuth(
         list.add(authenticate)
     }
 
+    internal fun setOnComplete(callback: suspend () -> Unit) {
+        _onComplete = callback
+    }
+
     suspend fun authenticate(credential: Credential): SPAuthToken {
         val authenticator = list.firstOrNull { it.type == credential.type }
             ?: error("Credential Provider not found: ${credential.type}")
         val token = authenticator.authenticate(credential)
         config.storage?.save(token)
+        _onComplete?.invoke()
         return token
     }
 
@@ -72,6 +80,11 @@ class SPAuth(
             }
 
         override fun install(plugin: SPAuth, scope: StartPoint) {
+            plugin.setOnComplete {
+                withContext(Dispatchers.Main) {
+                    scope.navigation.popBackStack(MainContent, inclusive = false)
+                }
+            }
             current = plugin
         }
 

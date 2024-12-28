@@ -16,7 +16,7 @@ import io.ktor.client.request.url
 class AppUserSessionBackend(
     private val client: HttpClient,
     private val baseUrl: String
-): SPUserSessionBackend<AppUser> {
+) : SPUserSessionBackend<AppUser> {
 
     override suspend fun logout(token: SPAuthToken): Boolean {
         val response = client.post {
