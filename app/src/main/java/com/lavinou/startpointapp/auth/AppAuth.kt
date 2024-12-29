@@ -98,7 +98,6 @@ fun StartPointConfiguration.installAuth(
         signInButtonRoute = PasswordSignIn
         signUpButtonRoute = PasswordSignUp
 
-        setStorage(appStorage)
         setUserSessionBackend(userSessionBackend)
 
         addProvider(Password) {

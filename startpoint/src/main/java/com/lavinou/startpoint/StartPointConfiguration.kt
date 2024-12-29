@@ -28,7 +28,7 @@ class StartPointConfiguration {
             val attributes =
                 scope.attributes.computeIfAbsent(PLUGIN_INSTALLED_LIST) { Attributes(concurrent = true) }
             val config = scope.config.pluginConfigurations[plugin.key]!!
-            val pluginData = plugin.prepare(config)
+            val pluginData = plugin.prepare(config, scope)
 
             plugin.install(pluginData, scope)
             scope.addInstalledPlugin(plugin)

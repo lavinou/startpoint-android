@@ -18,12 +18,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.lavinou.startpoint.auth.SPAuth
 import com.lavinou.startpoint.auth.SPAuthConfiguration
+import com.lavinou.startpoint.auth.authPreview
 import com.lavinou.startpoint.auth.password.Password
 import com.lavinou.startpoint.auth.password.navigation.PasswordSignUp
 import com.lavinou.startpoint.auth.phonenumber.PhoneNumber
@@ -119,13 +121,11 @@ internal fun PasskeyOtherWaysToSignUpContent(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun AuthOtherWaysToSignUpPreview() {
+    val context = LocalContext.current
     MaterialTheme {
         PasskeyOtherWaysToSignUpContent(
             rememberNavController(),
-            startPointAuth = SPAuth(
-                title = "",
-                config = SPAuthConfiguration()
-            )
+            startPointAuth = authPreview(context)
         )
     }
 }

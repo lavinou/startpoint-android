@@ -1,15 +1,20 @@
 package com.lavinou.startpoint.auth
 
+import android.content.Context
 import com.lavinou.startpoint.attribute.AttributeKey
 import com.lavinou.startpoint.attribute.Attributes
 import com.lavinou.startpoint.auth.backend.SPUserSessionBackend
 import com.lavinou.startpoint.auth.backend.model.SPAuthToken
+import com.lavinou.startpoint.auth.storage.DefaultSPAuthStorage
 import com.lavinou.startpoint.auth.storage.SPAuthStorage
 import com.lavinou.startpoint.dsl.StartPointDsl
 import kotlin.reflect.KClass
 
 @StartPointDsl
-class SPAuthConfiguration {
+class SPAuthConfiguration internal constructor(
+    private val context: Context,
+    val storage: SPAuthStorage = DefaultSPAuthStorage(context)
+){
 
     var title: String = ""
 
@@ -19,14 +24,9 @@ class SPAuthConfiguration {
 
     var onComplete: (suspend (SPAuthToken) -> Unit)? = null
 
-    var storage: SPAuthStorage? = null
-        private set
+
 
     val userSessions = mutableMapOf<KClass<*>, SPAuthUserSession<*>>()
-
-    fun setStorage(authStorage: SPAuthStorage) {
-        storage = authStorage
-    }
 
     inline fun <reified TUser : SPAuthUser<*>> setUserSessionBackend(
         backend: SPUserSessionBackend<TUser>
@@ -92,5 +92,10 @@ class SPAuthConfiguration {
             config = this
         )
     }
+}
 
+fun authPreview(context: Context): SPAuth {
+    val config = SPAuthConfiguration(context)
+    config.title = "Preview"
+    return config.build()
 }

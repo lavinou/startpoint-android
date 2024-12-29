@@ -10,13 +10,15 @@ import com.lavinou.startpoint.attribute.Attributes
 import com.lavinou.startpoint.auth.backend.SPAuthenticationBackend
 import com.lavinou.startpoint.auth.backend.model.SPAuthToken
 import com.lavinou.startpoint.auth.navigation.auth
+import com.lavinou.startpoint.auth.storage.DefaultSPAuthStorage
+import com.lavinou.startpoint.auth.storage.SPAuthStorage
 import com.lavinou.startpoint.dsl.StartPointDsl
 import com.lavinou.startpoint.navigation.MainContent
 import com.lavinou.startpoint.plugin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class SPAuth(
+class SPAuth internal constructor(
     val title: String,
     val signInButtonRoute: Any = Any(),
     val signUpButtonRoute: Any = Any(),
@@ -88,8 +90,8 @@ class SPAuth(
             current = plugin
         }
 
-        override fun prepare(block: SPAuthConfiguration.() -> Unit): SPAuth {
-            return SPAuthConfiguration().apply(block).build()
+        override fun prepare(block: SPAuthConfiguration.() -> Unit, scope: StartPoint): SPAuth {
+            return SPAuthConfiguration(scope.context).apply(block).build()
         }
 
     }

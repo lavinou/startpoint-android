@@ -15,7 +15,7 @@ public interface StartPointPlugin<out TConfig : Any, TPlugin : Any> {
 
     public val graph: NavGraphBuilder.(NavHostController) -> Unit
 
-    public fun prepare(block: TConfig.() -> Unit = {}): TPlugin
+    public fun prepare(block: TConfig.() -> Unit = {}, scope: StartPoint): TPlugin
 
     public fun install(plugin: TPlugin, scope: StartPoint)
 

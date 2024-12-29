@@ -1,9 +1,13 @@
 package com.lavinou.startpoint
 
+import android.content.Context
 import androidx.navigation.NavHostController
 import com.lavinou.startpoint.attribute.Attributes
 
 internal class NoOptStartPoint : StartPoint {
+
+    override val context: Context
+        get() = error("Using No Opt StartPoint")
 
     override val navigation: NavHostController
         get() = error("Using No Opt StartPoint")

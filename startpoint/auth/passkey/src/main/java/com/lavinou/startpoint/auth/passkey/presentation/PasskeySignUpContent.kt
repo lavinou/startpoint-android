@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +37,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.lavinou.startpoint.auth.SPAuth
 import com.lavinou.startpoint.auth.SPAuthConfiguration
+import com.lavinou.startpoint.auth.authPreview
 import com.lavinou.startpoint.auth.containsAnyBut
 import com.lavinou.startpoint.auth.passkey.Passkey
 import com.lavinou.startpoint.auth.passkey.navigation.PasskeyOtherWaysToSignUp
@@ -189,13 +191,11 @@ internal fun PasskeySignUpContent(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun AuthSignUpScreenPreview() {
+    val context = LocalContext.current
     MaterialTheme {
         PasskeySignUpContent(
             rememberNavController(),
-            startPointAuth = SPAuth(
-                title = "",
-                config = SPAuthConfiguration()
-            )
+            startPointAuth = authPreview(context)
         )
     }
 }
