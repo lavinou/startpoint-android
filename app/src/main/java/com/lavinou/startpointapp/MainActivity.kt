@@ -3,6 +3,10 @@ package com.lavinou.startpointapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.lavinou.startpoint.StartPointScaffold
 import com.lavinou.startpoint.rememberStartPoint
@@ -23,7 +27,12 @@ class MainActivity : ComponentActivity() {
 
             StartPointAppTheme {
                 StartPointScaffold(startPoint = startPoint) {
-                    AppNavHost(startPoint, navHostController)
+                    AppNavHost(
+                        startPoint,
+                        navHostController,
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(8.dp)
+                    )
                 }
             }
         }

@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,13 +19,19 @@ import kotlinx.coroutines.launch
 @Composable
 fun AppNavHost(
     startPoint: StartPoint,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
     val userSession = startPoint.userSession<AppUser>()
     val status = userSession.userFlow.collectAsState(initial = AppUser.AnonymousUser())
 
-    NavHost(navHostController, startDestination = "home-main", route = "home") {
+    NavHost(
+        navHostController,
+        startDestination = "home-main",
+        route = "home",
+        modifier = modifier
+    ) {
         composable(route = "home-main") {
             when (status.value) {
                 is AppUser.AuthenticatedUser -> {
