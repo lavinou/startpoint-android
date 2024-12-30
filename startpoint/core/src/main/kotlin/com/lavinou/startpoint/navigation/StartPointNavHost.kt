@@ -8,6 +8,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
 
+/**
+ * Serializable object representing the main content entry point for the client application.
+ * This object serves as a marker or identifier for navigating to or managing the primary
+ * content within the application.
+ *
+ * Being serializable allows `MainContent` to be used in data transfer, persistence,
+ * and state restoration processes.
+ */
 @Serializable
 object MainContent
 

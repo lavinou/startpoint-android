@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.navigation.NavHostController
 import com.lavinou.startpoint.attribute.Attributes
 
-class AndroidStartPoint(
+internal class AndroidStartPoint(
     override val context: Context,
     private val navHostController: NavHostController,
     configuration: StartPointConfiguration.() -> Unit
