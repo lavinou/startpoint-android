@@ -61,7 +61,7 @@ dependencies {
         implementation(project(":startpoint:auth"))
         implementation(project(":startpoint:auth:password"))
     } else {
-        implementation(platform("com.github.lavinou:startpoint-bom:0.1.0"))
+        implementation(platform("com.github.lavinou:startpoint-bom:0.1.1"))
         implementation("com.github.lavinou:startpoint-core")
         implementation("com.github.lavinou:startpoint-auth")
         implementation("com.github.lavinou:startpoint-auth-password")
