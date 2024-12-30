@@ -1,3 +1,4 @@
+val isLocalBuild = if(project.findProperty("local.build") == "true") true else false
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -53,10 +54,20 @@ android {
 
 dependencies {
 
-    implementation(project(":startpoint"))
-    implementation(project(":startpoint:auth"))
-    implementation(project(":startpoint:auth:password"))
-    implementation(project(":startpoint:auth:passkey"))
+//    implementation(project(":startpoint"))
+    if(isLocalBuild) {
+        implementation(platform(project(":startpoint:bom")))
+        implementation(project(":startpoint:core"))
+        implementation(project(":startpoint:auth"))
+        implementation(project(":startpoint:auth:password"))
+    } else {
+        implementation(platform("com.github.lavinou:startpoint-bom:0.1.0"))
+        implementation("com.github.lavinou:startpoint-core")
+        implementation("com.github.lavinou:startpoint-auth")
+        implementation("com.github.lavinou:startpoint-auth-password")
+    }
+
+//    implementation(project(":startpoint:auth:passkey"))
 
     // serialization
     implementation(libs.kotlinx.serialization)
@@ -77,6 +88,7 @@ dependencies {
     debugImplementation(libs.compose.ui.tooling)
     testImplementation(libs.bundles.test)
     androidTestImplementation(libs.bundles.android.test)
+
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")

@@ -10,8 +10,6 @@ import com.lavinou.startpoint.attribute.Attributes
 import com.lavinou.startpoint.auth.backend.SPAuthenticationBackend
 import com.lavinou.startpoint.auth.backend.model.SPAuthToken
 import com.lavinou.startpoint.auth.navigation.auth
-import com.lavinou.startpoint.auth.storage.DefaultSPAuthStorage
-import com.lavinou.startpoint.auth.storage.SPAuthStorage
 import com.lavinou.startpoint.dsl.StartPointDsl
 import com.lavinou.startpoint.navigation.MainContent
 import com.lavinou.startpoint.plugin

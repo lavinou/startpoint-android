@@ -18,12 +18,17 @@ junit = "4.13.2"
 android-test-ext-junit = "1.2.1"
 espresso = "3.6.1"
 ktor = "2.3.11"
+dokka = "2.0.0"
+startpoint = "0.1.0"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx"}
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "google-material"}
+
+# Kotlin
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 
 # Compose
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom"}
@@ -58,12 +63,19 @@ ktor-auth = { group = "io.ktor", name = "ktor-client-auth", version.ref = "ktor"
 ktor-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor"}
 
+# StartPoint
+startpoint-core = { group = "com.github.lavinou", name = "startpoint-core", version.ref = "startpoint" }
+startpoint-auth = { group = "com.github.lavinou", name = "startpoint-auth", version.ref = "startpoint" }
+startpoint-auth-core-ui = { group = "com.github.lavinou", name = "startpoint-auth-core-ui", version.ref = "startpoint" }
+startpoint-auth-password = { group = "com.github.lavinou", name = "startpoint-auth-password", version.ref = "startpoint" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle" }
 android-library = { id = "com.android.library", version.ref = "android-gradle" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 
 
 [bundles]

@@ -1,6 +1,3 @@
-val isLocalBuild = if(project.findProperty("local.build") == "true") true else false
-val releaseVersion: String = libs.versions.startpoint.get()
-
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -11,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.lavinou.startpoint.auth.password"
+    namespace = "com.lavinou.startpoint"
     compileSdk = libs.versions.compile.sdk.get().toInt()
 
     defaultConfig {
@@ -47,36 +44,22 @@ android {
 
 dependencies {
 
-    if(isLocalBuild) {
-        implementation(project(":startpoint:core"))
-        implementation(project(":startpoint:auth"))
-        implementation(project(":startpoint:auth:core-ui"))
-    } else {
-        implementation(libs.startpoint.core)
-        implementation(libs.startpoint.auth)
-        implementation(libs.startpoint.auth.core.ui)
-    }
-
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
     implementation(libs.activity.compose)
-
 
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
     implementation(libs.bundles.navigation)
     implementation(libs.google.material)
 
-    //Credentials
-    api(libs.bundles.credentials)
-
-    // serialization
     implementation(libs.kotlinx.serialization)
 
     debugImplementation(libs.compose.ui.tooling)
     testImplementation(libs.bundles.test)
     androidTestImplementation(libs.bundles.android.test)
 }
+
 
 //Include jar with the lib's KDoc HTML.
 val kdocJar by tasks.registering(Jar::class) {
@@ -100,9 +83,9 @@ publishing {
         create<MavenPublication>("release") {
             artifact(kdocJar)
             artifact(releaseAar)
-            artifact("${layout.buildDirectory.get().asFile.path}/outputs/aar/password-release.aar")
+            artifact("${layout.buildDirectory.get().asFile.path}/outputs/aar/core-release.aar")
             groupId = "com.github.lavinou"
-            artifactId = "startpoint-auth-password"
+            artifactId = "startpoint-core"
             version = libs.versions.startpoint.get()
         }
     }

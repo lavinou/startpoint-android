@@ -42,7 +42,7 @@ android {
 
 dependencies {
 
-    implementation(project(":startpoint"))
+    implementation(project(":startpoint:core"))
     implementation(project(":startpoint:auth"))
     implementation(project(":startpoint:auth:core-ui"))
     implementation(project(":startpoint:auth:password"))

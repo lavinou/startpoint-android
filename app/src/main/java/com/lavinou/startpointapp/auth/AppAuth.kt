@@ -34,7 +34,7 @@ fun StartPointConfiguration.installAuth(
     context: Context
 ) {
 
-    val domain = "192.168.1.226"
+    val domain = "192.168.1.225"
     val appStorage = DefaultSPAuthStorage(context)
 
     val client: HttpClient = HttpClient(CIO) {
