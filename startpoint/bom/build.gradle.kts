@@ -18,9 +18,9 @@ dependencies {
             api(project(":startpoint:auth"))
             api(project(":startpoint:auth:password"))
         } else {
-            api("com.github.lavinou:startpoint-core:$releaseVersion")
-            api("com.github.lavinou:startpoint-auth:$releaseVersion")
-            api("com.github.lavinou:startpoint-auth-password:$releaseVersion")
+            api("com.github.lavinou.startpoint-android:core:$releaseVersion")
+            api("com.github.lavinou.startpoint-android:auth:$releaseVersion")
+            api("com.github.lavinou.startpoint-android:auth-password:$releaseVersion")
             // more versions here
         }
     }
@@ -32,8 +32,8 @@ publishing {
             afterEvaluate {
                 from(components["javaPlatform"])
             }
-            groupId = "com.github.lavinou"
-            artifactId = "startpoint-bom"
+            groupId = "com.github.lavinou.startpoint-android"
+            artifactId = "bom"
             version = releaseVersion
         }
     }

@@ -99,8 +99,8 @@ publishing {
             artifact(kdocJar)
             artifact(releaseAar)
             artifact("${layout.buildDirectory.get().asFile.path}/outputs/aar/auth-release.aar")
-            groupId = "com.github.lavinou"
-            artifactId = "startpoint-auth"
+            groupId = "com.github.lavinou.startpoint-android"
+            artifactId = "auth"
             version = libs.versions.startpoint.get()
 
             pom {

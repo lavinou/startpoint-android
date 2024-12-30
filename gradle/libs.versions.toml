@@ -19,7 +19,7 @@ android-test-ext-junit = "1.2.1"
 espresso = "3.6.1"
 ktor = "2.3.11"
 dokka = "2.0.0"
-startpoint = "0.1.3"
+startpoint = "0.1.4"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx"}
@@ -64,10 +64,10 @@ ktor-content-negotiation = { group = "io.ktor", name = "ktor-client-content-nego
 ktor-serialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor"}
 
 # StartPoint
-startpoint-core = { group = "com.github.lavinou", name = "startpoint-core", version.ref = "startpoint" }
-startpoint-auth = { group = "com.github.lavinou", name = "startpoint-auth", version.ref = "startpoint" }
-startpoint-auth-core-ui = { group = "com.github.lavinou", name = "startpoint-auth-core-ui", version.ref = "startpoint" }
-startpoint-auth-password = { group = "com.github.lavinou", name = "startpoint-auth-password", version.ref = "startpoint" }
+startpoint-core = { group = "com.github.lavinou.startpoint-android", name = "core", version.ref = "startpoint" }
+startpoint-auth = { group = "com.github.lavinou.startpoint-android", name = "auth", version.ref = "startpoint" }
+startpoint-auth-core-ui = { group = "com.github.lavinou.startpoint-android", name = "auth-core-ui", version.ref = "startpoint" }
+startpoint-auth-password = { group = "com.github.lavinou", name = "auth-password", version.ref = "startpoint" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle" }

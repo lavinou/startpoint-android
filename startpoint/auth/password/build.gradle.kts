@@ -101,8 +101,8 @@ publishing {
             artifact(kdocJar)
             artifact(releaseAar)
             artifact("${layout.buildDirectory.get().asFile.path}/outputs/aar/password-release.aar")
-            groupId = "com.github.lavinou"
-            artifactId = "startpoint-auth-password"
+            groupId = "com.github.lavinou.startpoint-android"
+            artifactId = "auth-password"
             version = libs.versions.startpoint.get()
         }
     }

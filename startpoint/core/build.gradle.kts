@@ -84,8 +84,8 @@ publishing {
             artifact(kdocJar)
             artifact(releaseAar)
             artifact("${layout.buildDirectory.get().asFile.path}/outputs/aar/core-release.aar")
-            groupId = "com.github.lavinou"
-            artifactId = "startpoint-core"
+            groupId = "com.github.lavinou.startpoint-android"
+            artifactId = "core"
             version = libs.versions.startpoint.get()
         }
     }
