@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebdoc=self.webpackChunkwebdoc||[]).push([[1903],{1912:t=>{t.exports=JSON.parse('{"blogBasePath":"/startpoint-android/blog","blogTitle":"Blog","authorsListPath":"/startpoint-android/blog/authors"}')}}]);
