@@ -54,14 +54,13 @@ android {
 
 dependencies {
 
-//    implementation(project(":startpoint"))
     if(isLocalBuild) {
         implementation(platform(project(":startpoint:bom")))
         implementation(project(":startpoint:core"))
         implementation(project(":startpoint:auth"))
         implementation(project(":startpoint:auth:password"))
     } else {
-        implementation(platform("com.github.lavinou.startpoint-android:bom:0.1.4"))
+        implementation(platform("com.github.lavinou.startpoint-android:bom:2025.01.02"))
         implementation("com.github.lavinou.startpoint-android:core")
         implementation("com.github.lavinou.startpoint-android:auth")
         implementation("com.github.lavinou.startpoint-android:auth-password")

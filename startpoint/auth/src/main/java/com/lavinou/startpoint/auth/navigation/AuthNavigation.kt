@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -13,17 +12,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.svg.SvgDecoder
 import com.lavinou.startpoint.auth.SPAuth
 import com.lavinou.startpoint.auth.coreui.header.AuthHeader
+import com.lavinou.startpoint.auth.coreui.image.AsyncImage
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -61,11 +57,7 @@ internal fun NavGraphBuilder.auth(
                 )
 
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(auth.image)
-                        .decoderFactory(SvgDecoder.Factory())
-                        .build(),
-                    contentDescription = null,
+                    model = auth.image,
                     modifier = Modifier.fillMaxWidth()
                 )
 

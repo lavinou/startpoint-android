@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.bundles.compose)
     implementation(libs.bundles.navigation)
     implementation(libs.google.material)
+    implementation(libs.bundles.coil)
 
     //Credentials
     api(libs.bundles.credentials)
@@ -90,6 +91,21 @@ publishing {
             groupId = "com.github.lavinou.startpoint-android"
             artifactId = "auth-core-ui"
             version = libs.versions.startpoint.get()
+
+            pom {
+                withXml {
+                    val dependenciesNode = asNode().appendNode("dependencies")
+                    configurations.implementation.get().allDependencies.forEach {
+                        if (it.group != null && it.version != null) {
+                            val dependencyNode = dependenciesNode.appendNode("dependency")
+                            dependencyNode.appendNode("groupId", it.group)
+                            dependencyNode.appendNode("artifactId", it.name)
+                            dependencyNode.appendNode("version", it.version)
+                            dependencyNode.appendNode("scope", "compile")
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -64,8 +64,6 @@ dependencies {
     implementation(libs.bundles.navigation)
     implementation(libs.google.material)
 
-    implementation(libs.bundles.coil)
-
     //Credentials
     api(libs.bundles.credentials)
 
