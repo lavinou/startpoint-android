@@ -21,7 +21,7 @@ import androidx.navigation.NavHostController
 @Composable
 fun AuthHeader(
     navHostController: NavHostController,
-    title: String
+    title: String? = null
 ) {
     Column(
         horizontalAlignment = Alignment.Start,
@@ -42,9 +42,12 @@ fun AuthHeader(
             Icon(imageVector = Icons.Default.Face, contentDescription = "login")
         }
 
-        Text(
-            text = title,
-            style = MaterialTheme.typography.headlineLarge
-        )
+        title?.let {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineLarge
+            )
+        }
+
     }
 }

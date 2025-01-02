@@ -4,6 +4,8 @@ import android.content.Context
 import com.lavinou.startpoint.StartPointConfiguration
 import com.lavinou.startpoint.auth.SPAuth
 import com.lavinou.startpoint.auth.password.Password
+import com.lavinou.startpoint.auth.password.Password.Provider.PASSWORD_KEY
+import com.lavinou.startpoint.auth.password.Password.Provider.USER_KEY
 import com.lavinou.startpoint.auth.password.navigation.PasswordSignIn
 import com.lavinou.startpoint.auth.password.navigation.PasswordSignUp
 import com.lavinou.startpoint.auth.storage.DefaultSPAuthStorage
@@ -97,11 +99,31 @@ fun StartPointConfiguration.installAuth(
         title = "Welcome"
         signInButtonRoute = PasswordSignIn
         signUpButtonRoute = PasswordSignUp
+        image =
+            "https://upload.wikimedia.org/wikipedia/commons/6/64/Android_logo_2019_%28stacked%29.svg"
 
         setUserSessionBackend(userSessionBackend)
 
         addProvider(Password) {
+
             setBackend(passwordBackend)
+
+            addValidator(
+                key = USER_KEY,
+                rule = { value -> value.isBlank() },
+                message = "make sure to enter an email address"
+            )
+            addValidator(
+                key = PASSWORD_KEY,
+                rule = { value -> value.isBlank() },
+                message = "Please add your password"
+            )
+            addValidator(
+                key = PASSWORD_KEY,
+                rule = { value -> value.length < 8 },
+                message = "password is too short."
+            )
+
         }
     }
 }

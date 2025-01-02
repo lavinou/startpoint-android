@@ -1,5 +1,6 @@
 package com.lavinou.startpoint.auth.password.presentation
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -23,10 +25,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.credentials.CreatePasswordRequest
+import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetPasswordOption
 import androidx.credentials.PasswordCredential
@@ -38,6 +44,7 @@ import com.lavinou.startpoint.auth.coreui.textfield.AuthTextField
 import com.lavinou.startpoint.auth.password.navigation.ForgotPassword
 import com.lavinou.startpoint.auth.password.presentation.action.PasswordAction
 import com.lavinou.startpoint.auth.password.presentation.state.PasswordState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -46,11 +53,13 @@ internal fun PasswordSignInContent(
     navHostController: NavHostController,
     state: PasswordState,
     onDispatchAction: (PasswordAction) -> Unit,
+    isValid: () -> Boolean
 ) {
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val credentialManager = rememberCredentialManager()
+    val softKeyboard = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(key1 = Unit, block = {
         try {
@@ -109,11 +118,18 @@ internal fun PasswordSignInContent(
                     )
                 },
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
                 ),
                 trailingIcon = {
                     Icon(imageVector = Icons.Default.Email, contentDescription = "email-icon")
-                }
+                },
+                supportingText = state.errors.email?.let { error ->
+                    {
+                        Text(error)
+                    }
+                },
+                isError = state.errors.email != null
             )
 
             AuthTextField(
@@ -128,11 +144,33 @@ internal fun PasswordSignInContent(
                 },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
                 ),
                 trailingIcon = {
                     Icon(imageVector = Icons.Default.Lock, contentDescription = "lock-icon")
-                }
+                },
+                supportingText = state.errors.password?.let { error ->
+                    {
+                        Text(error)
+                    }
+                },
+                isError = state.errors.password != null,
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        if (isValid()) {
+                            submit(
+                                startPointAuth = startPointAuth,
+                                credentialManager = credentialManager,
+                                context = context,
+                                scope = scope,
+                                state = state,
+                                onDispatchAction = onDispatchAction,
+                                softwareKeyboardController = softKeyboard
+                            )
+                        }
+                    }
+                )
             )
 
             Row(
@@ -143,28 +181,22 @@ internal fun PasswordSignInContent(
                     text = "forgot password?",
                     modifier = Modifier.clickable {
                         navHostController.navigate(ForgotPassword)
-                    }
+                    },
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
 
             Button(
                 onClick = {
-                    scope.launch {
-                        try {
-                            credentialManager.createCredential(
-                                context, request = CreatePasswordRequest(
-                                    id = state.email,
-                                    password = state.password
-                                )
-                            )
-                        } catch (e: Exception) {
-                            Log.e("PasswordSignInContent", e.message, e)
-                        }
-
-                        onDispatchAction(
-                            PasswordAction.OnSignInSubmit(
-                                startPointAuth
-                            )
+                    if (isValid()) {
+                        submit(
+                            startPointAuth = startPointAuth,
+                            credentialManager = credentialManager,
+                            context = context,
+                            scope = scope,
+                            state = state,
+                            onDispatchAction = onDispatchAction,
+                            softwareKeyboardController = softKeyboard
                         )
                     }
                 },
@@ -189,5 +221,35 @@ internal fun PasswordSignInContent(
                     CircularProgressIndicator()
                 }
         }
+    }
+}
+
+private fun submit(
+    startPointAuth: SPAuth,
+    credentialManager: CredentialManager,
+    context: Context,
+    scope: CoroutineScope,
+    state: PasswordState,
+    onDispatchAction: (PasswordAction) -> Unit,
+    softwareKeyboardController: SoftwareKeyboardController?
+) {
+    scope.launch {
+        try {
+            credentialManager.createCredential(
+                context, request = CreatePasswordRequest(
+                    id = state.email,
+                    password = state.password
+                )
+            )
+        } catch (e: Exception) {
+            Log.e("PasswordSignInContent", e.message, e)
+        }
+
+        onDispatchAction(
+            PasswordAction.OnSignInSubmit(
+                startPointAuth
+            )
+        )
+        softwareKeyboardController?.hide()
     }
 }

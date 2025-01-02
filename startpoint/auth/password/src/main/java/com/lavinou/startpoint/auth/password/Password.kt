@@ -9,6 +9,7 @@ import com.lavinou.startpoint.attribute.AttributeKey
 import com.lavinou.startpoint.auth.SPAuth
 import com.lavinou.startpoint.auth.SPAuthProvider
 import com.lavinou.startpoint.auth.backend.model.SPAuthToken
+import com.lavinou.startpoint.auth.password.model.PasswordValidator
 import com.lavinou.startpoint.auth.password.navigation.password
 import com.lavinou.startpoint.auth.password.presentation.PasswordSignInContent
 import com.lavinou.startpoint.auth.password.presentation.PasswordSignUpContent
@@ -17,12 +18,13 @@ import com.lavinou.startpoint.auth.password.presentation.effect.PasswordEffect
 import com.lavinou.startpoint.auth.password.presentation.viewmodel.PasswordViewModel
 import com.lavinou.startpoint.dsl.StartPointDsl
 
-class Password(
-    val backend: PasswordSPAuthBackend
+class Password internal constructor(
+    val backend: PasswordSPAuthBackend,
+    val validators: Map<String, List<PasswordValidator>>
 ) {
 
     private val passwordViewModel = PasswordViewModel(
-        backend = backend
+        validators = validators
     )
 
     private var _onSuccess: (suspend (SPAuthToken) -> Unit)? = null
@@ -52,7 +54,8 @@ class Password(
             startPointAuth = startPointAuth,
             navHostController = navHostController,
             state = state.value,
-            onDispatchAction = passwordViewModel::dispatch
+            onDispatchAction = passwordViewModel::dispatch,
+            isValid = passwordViewModel::isValid
         )
     }
 
@@ -80,6 +83,10 @@ class Password(
         private var currentPlugin: Password? = null
         private var currentScope: SPAuth? = null
 
+        const val PASSWORD_KEY = "password"
+        const val USER_KEY = "email"
+        const val FULL_NAME_KEY = "fullName"
+
         override val key: AttributeKey<Password>
             get() = AttributeKey("Password")
 
@@ -106,7 +113,5 @@ class Password(
         override fun prepare(block: PasswordConfiguration.() -> Unit): Password {
             return PasswordConfiguration().apply(block).build()
         }
-
     }
-
 }

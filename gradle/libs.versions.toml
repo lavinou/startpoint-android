@@ -19,13 +19,21 @@ android-test-ext-junit = "1.2.1"
 espresso = "3.6.1"
 ktor = "2.3.11"
 dokka = "2.0.0"
-startpoint = "0.1.4"
+coil = "3.0.4"
+startpoint = "0.2.0"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx"}
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "google-material"}
+
+# Coil
+coil-network= { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil"}
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil"}
+coil-svg = { group = "io.coil-kt.coil3", name = "coil-svg", version.ref = "coil"}
+coil-gif = { group = "io.coil-kt.coil3", name = "coil-gif", version.ref = "coil"}
+
 
 # Kotlin
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
@@ -102,6 +110,13 @@ networking = [
     'ktor-auth',
     'ktor-content-negotiation',
     'ktor-serialization'
+]
+
+coil = [
+    'coil-network',
+    'coil-compose',
+    'coil-svg',
+    'coil-gif'
 ]
 
 test = [

@@ -17,12 +17,23 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class SPAuth internal constructor(
-    val title: String,
-    val signInButtonRoute: Any = Any(),
-    val signUpButtonRoute: Any = Any(),
-    val config: SPAuthConfiguration
+    private val config: SPAuthConfiguration
 ) {
     private val list = mutableListOf<SPAuthenticationBackend>()
+
+    val title: String
+        get() = config.title
+
+    val image: Any?
+        get() = config.image
+
+    val signUpButtonRoute: Any
+        get() = config.signUpButtonRoute
+
+    val signInButtonRoute: Any
+        get() = config.signInButtonRoute
+
+    val userSessions = config.userSessions
 
     val attributes: Attributes = Attributes(concurrent = true)
 
@@ -55,13 +66,19 @@ class SPAuth internal constructor(
         val authenticator = list.firstOrNull { it.type == credential.type }
             ?: error("Credential Provider not found: ${credential.type}")
         val token = authenticator.authenticate(credential)
-        config.storage?.save(token)
+        config.storage.save(token)
         _onComplete?.invoke()
         return token
     }
 
     inline fun <reified TUser : SPAuthUser<*>> userSession(): SPAuthUserSession<TUser> {
-        return config.userSession()
+        val manager = userSessions[TUser::class]
+        return if (manager is SPAuthUserSession<*>) {
+            @Suppress("UNCHECKED_CAST")
+            manager as SPAuthUserSession<TUser>
+        } else {
+            throw IllegalStateException("UserManager for ${TUser::class} not found")
+        }
     }
 
     @StartPointDsl

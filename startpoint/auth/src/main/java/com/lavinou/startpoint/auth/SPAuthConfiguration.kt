@@ -24,7 +24,7 @@ class SPAuthConfiguration internal constructor(
 
     var onComplete: (suspend (SPAuthToken) -> Unit)? = null
 
-
+    var image: Any? = null
 
     val userSessions = mutableMapOf<KClass<*>, SPAuthUserSession<*>>()
 
@@ -36,16 +36,6 @@ class SPAuthConfiguration internal constructor(
             storage = storage,
             backend = backend
         )
-    }
-
-    inline fun <reified TUser : SPAuthUser<*>> userSession(): SPAuthUserSession<TUser> {
-        val manager = userSessions[TUser::class]
-        return if (manager is SPAuthUserSession<*>) {
-            @Suppress("UNCHECKED_CAST")
-            manager as SPAuthUserSession<TUser>
-        } else {
-            throw IllegalStateException("UserManager for ${TUser::class} not found")
-        }
     }
 
     private val providers: MutableMap<AttributeKey<*>, (SPAuth) -> Unit> = mutableMapOf()
@@ -68,7 +58,7 @@ class SPAuthConfiguration internal constructor(
         providers[provider.key] = { scope ->
             val attributes =
                 scope.attributes.computeIfAbsent(PROVIDER_INSTALLED_LIST) { Attributes(concurrent = true) }
-            val config = scope.config.providerConfigurations[provider.key]!!
+            val config = providerConfigurations[provider.key]!!
             val pluginData = provider.prepare(config)
 
             provider.install(pluginData, scope)
@@ -85,12 +75,7 @@ class SPAuthConfiguration internal constructor(
 
     internal fun build(): SPAuth {
 
-        return SPAuth(
-            title = title,
-            signInButtonRoute = signInButtonRoute,
-            signUpButtonRoute = signUpButtonRoute,
-            config = this
-        )
+        return SPAuth(config = this)
     }
 }
 

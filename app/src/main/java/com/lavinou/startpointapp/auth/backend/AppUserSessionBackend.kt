@@ -1,6 +1,5 @@
 package com.lavinou.startpointapp.auth.backend
 
-import android.util.Log
 import com.lavinou.startpoint.auth.backend.SPUserSessionBackend
 import com.lavinou.startpoint.auth.backend.model.SPAuthToken
 import com.lavinou.startpointapp.auth.model.AppUser
@@ -25,7 +24,6 @@ class AppUserSessionBackend(
             }
             url("$baseUrl/account/logout/")
         }
-        Log.e("PasswordSPAuthBackend", "Logout Status: ${response.status}")
         return true
     }
 
