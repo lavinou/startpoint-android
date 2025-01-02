@@ -8,26 +8,71 @@ import com.lavinou.startpoint.attribute.Attributes
 internal val PROVIDER_INSTALLED_LIST = AttributeKey<Attributes>("AuthProviderRegistry")
 
 
-interface SPAuthProvider<out TConfig : Any, TProvider : Any> {
+/**
+ * Interface representing an authentication provider in SPAuth.
+ * This allows for the integration of custom authentication logic and flows.
+ *
+ * @param TConfig The type of the configuration used to set up the provider.
+ * @param TProvider The type of the provider instance being created and installed.
+ */
+public interface SPAuthProvider<out TConfig : Any, TProvider : Any> {
 
-    val key: AttributeKey<TProvider>
+    /**
+     * The unique key that identifies the provider instance.
+     */
+    public val key: AttributeKey<TProvider>
 
-    val graph: NavGraphBuilder.(NavHostController) -> Unit
+    /**
+     * Defines the navigation graph associated with this provider.
+     * This is used to handle routes within the authentication flow.
+     */
+    public val graph: NavGraphBuilder.(NavHostController) -> Unit
 
-    fun prepare(block: TConfig.() -> Unit): TProvider
+    /**
+     * Prepares and configures the provider using the specified configuration block.
+     *
+     * @param block Lambda used to configure the provider instance.
+     * @return The configured provider instance.
+     */
+    public fun prepare(block: TConfig.() -> Unit): TProvider
 
-    fun install(plugin: TProvider, scope: SPAuth)
+    /**
+     * Installs the configured provider into the SPAuth instance.
+     *
+     * @param plugin The provider instance to install.
+     * @param scope The SPAuth instance where the provider will be applied.
+     */
+    public fun install(plugin: TProvider, scope: SPAuth)
 }
 
+/**
+ * Retrieves a provider instance if it exists within the SPAuth scope.
+ *
+ * @param plugin The authentication provider to search for.
+ * @return The provider instance if found, otherwise null.
+ */
 public fun <B : Any, F : Any> SPAuth.providerOrNull(plugin: SPAuthProvider<B, F>): F? =
     attributes.getOrNull(PROVIDER_INSTALLED_LIST)?.getOrNull(plugin.key)
 
+/**
+ * Retrieves a provider instance, or throws an exception if the provider is not installed.
+ *
+ * @param plugin The authentication provider to retrieve.
+ * @return The installed provider instance.
+ * @throws IllegalStateException if the provider is not installed.
+ */
 public fun <B : Any, F : Any> SPAuth.provider(plugin: SPAuthProvider<B, F>): F {
     return providerOrNull(plugin) ?: throw IllegalStateException(
         "Plugin $plugin is not installed. Consider using `install(${plugin.key})` in client config first."
     )
 }
 
+/**
+ * Checks if any provider other than the specified one is installed in SPAuth.
+ *
+ * @param plugin The provider to exclude from the check.
+ * @return True if there are other installed providers, false otherwise.
+ */
 public fun <B : Any, F : Any> SPAuth.containsAnyBut(plugin: SPAuthProvider<B, F>): Boolean {
     return attributes.getOrNull(PROVIDER_INSTALLED_LIST)?.allKeys?.any { plugin.key != it } ?: false
 }

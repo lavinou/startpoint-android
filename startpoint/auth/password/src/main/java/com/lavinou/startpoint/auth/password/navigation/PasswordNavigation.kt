@@ -59,5 +59,4 @@ internal fun NavGraphBuilder.password(
             ConfirmPasswordResetContent(navHostController = navHostController)
         }
     }
-
 }

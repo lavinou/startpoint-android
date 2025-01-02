@@ -4,9 +4,7 @@ import com.lavinou.startpoint.auth.backend.model.SPAuthToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-internal class OptOutSPAuthStorage(
-
-) : SPAuthStorage {
+internal class OptOutSPAuthStorage : SPAuthStorage {
 
     override val token: SPAuthToken?
         get() = null

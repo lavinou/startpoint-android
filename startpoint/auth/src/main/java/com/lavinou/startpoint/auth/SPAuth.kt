@@ -16,36 +16,64 @@ import com.lavinou.startpoint.plugin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+/**
+ * SPAuth is the primary class responsible for managing authentication
+ * within the StartPoint framework. It facilitates user sign-in, sign-up,
+ * and session handling through various backends and configurations.
+ */
 class SPAuth internal constructor(
     private val config: SPAuthConfiguration
 ) {
-    private val list = mutableListOf<SPAuthenticationBackend>()
 
+    /**
+     * The title associated with this authentication instance,
+     * derived from the configuration.
+     */
     val title: String
         get() = config.title
 
+    /**
+     * An optional image associated with this authentication instance,
+     * as specified in the configuration.
+     */
     val image: Any?
         get() = config.image
 
+    /**
+     * The route or action triggered when the sign-up button is pressed.
+     */
     val signUpButtonRoute: Any
         get() = config.signUpButtonRoute
 
+    /**
+     * The route or action triggered when the sign-in button is pressed.
+     */
     val signInButtonRoute: Any
         get() = config.signInButtonRoute
 
+    /**
+     * A map of user sessions managed by this authentication instance.
+     */
     val userSessions = config.userSessions
 
-    val attributes: Attributes = Attributes(concurrent = true)
-
-    val installedProvider: MutableList<SPAuthProvider<*, *>> = mutableListOf()
-
-    private var _onComplete: (suspend () -> Unit)? = null
+    /**
+     * A suspendable function invoked upon successful authentication,
+     * passing the generated authentication token.
+     */
     val onComplete: (suspend (SPAuthToken) -> Unit)?
         get() {
             return config.onComplete
         }
 
-    fun addInstalledProvider(plugin: SPAuthProvider<*, *>) {
+    internal val attributes: Attributes = Attributes(concurrent = true)
+
+    internal val installedProvider: MutableList<SPAuthProvider<*, *>> = mutableListOf()
+
+    private var _onComplete: (suspend () -> Unit)? = null
+
+    private val backends = mutableListOf<SPAuthenticationBackend>()
+
+    internal fun addInstalledProvider(plugin: SPAuthProvider<*, *>) {
         installedProvider.add(plugin)
     }
 
@@ -53,17 +81,31 @@ class SPAuth internal constructor(
         config.install(client = this)
     }
 
-
+    /**
+     * Adds a new authentication backend to handle specific credential types.
+     *
+     * @param authenticate The backend implementation responsible for
+     * verifying user credentials.
+     */
     fun addAuthBackend(authenticate: SPAuthenticationBackend) {
-        list.add(authenticate)
+        backends.add(authenticate)
     }
 
     internal fun setOnComplete(callback: suspend () -> Unit) {
         _onComplete = callback
     }
 
+    /**
+     * Authenticates the provided credential using the appropriate backend.
+     * Saves the resulting token to storage and invokes the onComplete callback if defined.
+     *
+     * @param credential The user's credential used for authentication.
+     * @return The authentication token generated upon successful authentication.
+     * @throws IllegalStateException if no backend is found to handle the provided
+     * credential type.
+     */
     suspend fun authenticate(credential: Credential): SPAuthToken {
-        val authenticator = list.firstOrNull { it.type == credential.type }
+        val authenticator = backends.firstOrNull { it.type == credential.type }
             ?: error("Credential Provider not found: ${credential.type}")
         val token = authenticator.authenticate(credential)
         config.storage.save(token)
@@ -71,6 +113,14 @@ class SPAuth internal constructor(
         return token
     }
 
+    /**
+     * Retrieves the user session manager for the specified user type.
+     *
+     * @return The user session manager responsible for managing the
+     * session of the specified user type.
+     * @throws IllegalStateException if no session manager is found
+     * for the provided user type.
+     */
     inline fun <reified TUser : SPAuthUser<*>> userSession(): SPAuthUserSession<TUser> {
         val manager = userSessions[TUser::class]
         return if (manager is SPAuthUserSession<*>) {
@@ -112,6 +162,14 @@ class SPAuth internal constructor(
     }
 }
 
+/**
+ * Retrieves the user session manager for the specified user type as an extension
+ * of the StartPoint framework.
+ * This allows seamless access to user sessions directly from the StartPoint instance.
+ *
+ * @return The user session manager responsible for managing the session of the specified user type.
+ * @throws IllegalStateException if no session manager is found for the provided user type.
+ */
 inline fun <reified TUser : SPAuthUser<*>> StartPoint.userSession(): SPAuthUserSession<TUser> {
     return plugin(SPAuth).userSession()
 }

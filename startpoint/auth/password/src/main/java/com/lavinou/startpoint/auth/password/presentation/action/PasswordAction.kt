@@ -24,7 +24,7 @@ internal sealed interface PasswordAction {
         val scope: SPAuth
     ) : PasswordAction
 
-    object OnPasswordReset : PasswordAction
+    data object OnPasswordReset : PasswordAction
 
-    object ResetForm : PasswordAction
+    data object ResetForm : PasswordAction
 }

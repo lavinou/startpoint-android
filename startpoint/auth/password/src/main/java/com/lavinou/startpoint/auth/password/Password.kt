@@ -19,8 +19,8 @@ import com.lavinou.startpoint.auth.password.presentation.viewmodel.PasswordViewM
 import com.lavinou.startpoint.dsl.StartPointDsl
 
 class Password internal constructor(
-    val backend: PasswordSPAuthBackend,
-    val validators: Map<String, List<PasswordValidator>>
+    private val backend: PasswordSPAuthBackend,
+    private val validators: Map<String, List<PasswordValidator>>
 ) {
 
     internal val passwordViewModel = PasswordViewModel(
@@ -82,12 +82,12 @@ class Password internal constructor(
     @StartPointDsl
     companion object Provider : SPAuthProvider<PasswordConfiguration, Password> {
 
+        public const val PASSWORD_KEY = "password"
+        public const val USER_KEY = "email"
+        public const val FULL_NAME_KEY = "fullName"
+
         private var currentPlugin: Password? = null
         private var currentScope: SPAuth? = null
-
-        const val PASSWORD_KEY = "password"
-        const val USER_KEY = "email"
-        const val FULL_NAME_KEY = "fullName"
 
         override val key: AttributeKey<Password>
             get() = AttributeKey("Password")

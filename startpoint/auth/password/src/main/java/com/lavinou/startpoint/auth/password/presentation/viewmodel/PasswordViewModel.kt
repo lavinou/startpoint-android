@@ -126,7 +126,7 @@ internal class PasswordViewModel(
         }
 
 
-        if(keys.contains(USER_KEY))
+        if (keys.contains(USER_KEY))
             validators[USER_KEY]?.map { validate ->
                 if (validate.rule(state.value.email)) {
                     _state.update {
@@ -141,7 +141,7 @@ internal class PasswordViewModel(
                 }
             }
 
-        if(keys.contains(PASSWORD_KEY))
+        if (keys.contains(PASSWORD_KEY))
             validators[PASSWORD_KEY]?.map { validate ->
                 if (validate.rule(state.value.password)) {
                     _state.update {
@@ -157,7 +157,7 @@ internal class PasswordViewModel(
                 return@map
             }
 
-        if(keys.contains(FULL_NAME_KEY))
+        if (keys.contains(FULL_NAME_KEY))
             validators[FULL_NAME_KEY]?.map { validate ->
                 if (validate.rule(state.value.fullName)) {
                     _state.update {
