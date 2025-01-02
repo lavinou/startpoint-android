@@ -3,7 +3,6 @@ import java.text.SimpleDateFormat
 
 val isLocalBuild = if(project.findProperty("local.build") == "true") true else false
 val releaseVersion: String = libs.versions.startpoint.get()
-val timestamp = SimpleDateFormat("yyyy.MM.dd").format(Date())
 
 plugins {
     alias(libs.plugins.dokka)
@@ -38,7 +37,7 @@ publishing {
             }
             groupId = "com.github.lavinou.startpoint-android"
             artifactId = "bom"
-            version = timestamp
+            version = releaseVersion
         }
     }
 }
