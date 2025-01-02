@@ -121,7 +121,7 @@ fun StartPointConfiguration.installAuth(
             )
             addValidator(
                 key = PASSWORD_KEY,
-                rule = { value -> value.length < 8 },
+                rule = { value -> value.length in 1..7 },
                 message = "password is too short."
             )
 
