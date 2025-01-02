@@ -4,6 +4,7 @@ import android.content.Context
 import com.lavinou.startpoint.StartPointConfiguration
 import com.lavinou.startpoint.auth.SPAuth
 import com.lavinou.startpoint.auth.password.Password
+import com.lavinou.startpoint.auth.password.Password.Provider.FULL_NAME_KEY
 import com.lavinou.startpoint.auth.password.Password.Provider.PASSWORD_KEY
 import com.lavinou.startpoint.auth.password.Password.Provider.USER_KEY
 import com.lavinou.startpoint.auth.password.navigation.PasswordSignIn
@@ -122,6 +123,12 @@ fun StartPointConfiguration.installAuth(
                 key = PASSWORD_KEY,
                 rule = { value -> value.length < 8 },
                 message = "password is too short."
+            )
+
+            addValidator(
+                key = FULL_NAME_KEY,
+                rule = { value -> value.isBlank() },
+                message = "Please add full name"
             )
 
         }

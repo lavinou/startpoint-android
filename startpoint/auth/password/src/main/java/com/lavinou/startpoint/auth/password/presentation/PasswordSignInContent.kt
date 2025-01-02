@@ -1,6 +1,5 @@
 package com.lavinou.startpoint.auth.password.presentation
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,13 +25,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.credentials.CreatePasswordRequest
-import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetPasswordOption
 import androidx.credentials.PasswordCredential
@@ -41,10 +39,11 @@ import com.lavinou.startpoint.auth.SPAuth
 import com.lavinou.startpoint.auth.coreui.header.AuthHeader
 import com.lavinou.startpoint.auth.coreui.remember.rememberCredentialManager
 import com.lavinou.startpoint.auth.coreui.textfield.AuthTextField
+import com.lavinou.startpoint.auth.password.Password.Provider.PASSWORD_KEY
+import com.lavinou.startpoint.auth.password.Password.Provider.USER_KEY
 import com.lavinou.startpoint.auth.password.navigation.ForgotPassword
 import com.lavinou.startpoint.auth.password.presentation.action.PasswordAction
 import com.lavinou.startpoint.auth.password.presentation.state.PasswordState
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -53,13 +52,41 @@ internal fun PasswordSignInContent(
     navHostController: NavHostController,
     state: PasswordState,
     onDispatchAction: (PasswordAction) -> Unit,
-    isValid: () -> Boolean
+    isValid: (List<String>) -> Boolean
 ) {
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val credentialManager = rememberCredentialManager()
     val softKeyboard = LocalSoftwareKeyboardController.current
+
+    fun submit() {
+        scope.launch {
+            try {
+                credentialManager.createCredential(
+                    context, request = CreatePasswordRequest(
+                        id = state.email,
+                        password = state.password
+                    )
+                )
+            } catch (e: Exception) {
+                Log.e("PasswordSignInContent", e.message, e)
+            }
+
+            onDispatchAction(
+                PasswordAction.OnSignInSubmit(
+                    startPointAuth
+                )
+            )
+            softKeyboard?.hide()
+        }
+    }
+
+    fun validateAndSubmit() {
+        if (isValid(listOf(USER_KEY, PASSWORD_KEY))) {
+            submit()
+        }
+    }
 
     LaunchedEffect(key1 = Unit, block = {
         try {
@@ -103,6 +130,15 @@ internal fun PasswordSignInContent(
             navHostController = navHostController,
             title = "Sign In"
         )
+
+        state.errors.server?.let { error ->
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -158,17 +194,7 @@ internal fun PasswordSignInContent(
                 isError = state.errors.password != null,
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        if (isValid()) {
-                            submit(
-                                startPointAuth = startPointAuth,
-                                credentialManager = credentialManager,
-                                context = context,
-                                scope = scope,
-                                state = state,
-                                onDispatchAction = onDispatchAction,
-                                softwareKeyboardController = softKeyboard
-                            )
-                        }
+                        validateAndSubmit()
                     }
                 )
             )
@@ -188,17 +214,7 @@ internal fun PasswordSignInContent(
 
             Button(
                 onClick = {
-                    if (isValid()) {
-                        submit(
-                            startPointAuth = startPointAuth,
-                            credentialManager = credentialManager,
-                            context = context,
-                            scope = scope,
-                            state = state,
-                            onDispatchAction = onDispatchAction,
-                            softwareKeyboardController = softKeyboard
-                        )
-                    }
+                    validateAndSubmit()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -221,35 +237,5 @@ internal fun PasswordSignInContent(
                     CircularProgressIndicator()
                 }
         }
-    }
-}
-
-private fun submit(
-    startPointAuth: SPAuth,
-    credentialManager: CredentialManager,
-    context: Context,
-    scope: CoroutineScope,
-    state: PasswordState,
-    onDispatchAction: (PasswordAction) -> Unit,
-    softwareKeyboardController: SoftwareKeyboardController?
-) {
-    scope.launch {
-        try {
-            credentialManager.createCredential(
-                context, request = CreatePasswordRequest(
-                    id = state.email,
-                    password = state.password
-                )
-            )
-        } catch (e: Exception) {
-            Log.e("PasswordSignInContent", e.message, e)
-        }
-
-        onDispatchAction(
-            PasswordAction.OnSignInSubmit(
-                startPointAuth
-            )
-        )
-        softwareKeyboardController?.hide()
     }
 }

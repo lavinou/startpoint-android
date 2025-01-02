@@ -1,5 +1,7 @@
 package com.lavinou.startpoint.auth.password.navigation
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -44,8 +46,12 @@ internal fun NavGraphBuilder.password(
         }
 
         composable<ForgotPassword> {
+            val state by password.passwordViewModel.state.collectAsState()
             ForgotPasswordContent(
-                navHostController = navHostController
+                navHostController = navHostController,
+                state = state,
+                onDispatchAction = password.passwordViewModel::dispatch,
+                isValid = password.passwordViewModel::isValid
             )
         }
 

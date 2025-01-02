@@ -3,6 +3,7 @@ package com.lavinou.startpoint.auth.password.presentation.viewmodel
 import androidx.credentials.PasswordCredential
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lavinou.startpoint.auth.password.Password.Provider.FULL_NAME_KEY
 import com.lavinou.startpoint.auth.password.Password.Provider.PASSWORD_KEY
 import com.lavinou.startpoint.auth.password.Password.Provider.USER_KEY
 import com.lavinou.startpoint.auth.password.PasswordSPAuthBackend
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class PasswordViewModel(
+    private val backend: PasswordSPAuthBackend,
     private val validators: Map<String, List<PasswordValidator>> = emptyMap()
 ) : ViewModel() {
 
@@ -72,17 +74,36 @@ internal class PasswordViewModel(
 
             is PasswordAction.OnSignInSubmit -> {
                 viewModelScope.launch {
-                    dispatch(PasswordAction.OnViewLoad(true))
-                    val token = action.scope.authenticate(
-                        PasswordCredential(
-                            id = state.value.email,
-                            password = state.value.password
+                    try {
+                        dispatch(PasswordAction.OnViewLoad(true))
+                        val token = action.scope.authenticate(
+                            PasswordCredential(
+                                id = state.value.email,
+                                password = state.value.password
+                            )
                         )
-                    )
-                    dispatch(PasswordAction.OnViewLoad(false))
-                    _effect.update {
-                        PasswordEffect.OnSuccess(token)
+
+                        _effect.update {
+                            PasswordEffect.OnSuccess(token)
+                        }
+                    } catch (e: Exception) {
+                        _state.update {
+                            it.copy(
+                                errors = it.errors.copy(
+                                    server = "Email or password is incorrect"
+                                )
+                            )
+                        }
+                    } finally {
+                        dispatch(PasswordAction.OnViewLoad(false))
                     }
+
+                }
+            }
+
+            PasswordAction.OnPasswordReset -> {
+                viewModelScope.launch {
+                    backend.resetPassword(state.value.email)
                 }
             }
 
@@ -97,41 +118,59 @@ internal class PasswordViewModel(
         }
     }
 
-    fun isValid(): Boolean {
+    fun isValid(keys: List<String> = emptyList()): Boolean {
 
         var anyErrors = false
         _state.update {
             it.copy(errors = PasswordErrorState())
         }
 
-        validators[USER_KEY]?.map { validate ->
-            if (validate.rule(state.value.email)) {
-                _state.update {
-                    it.copy(
-                        errors = it.errors.copy(
-                            email = validate.message
+
+        if(keys.contains(USER_KEY))
+            validators[USER_KEY]?.map { validate ->
+                if (validate.rule(state.value.email)) {
+                    _state.update {
+                        it.copy(
+                            errors = it.errors.copy(
+                                email = validate.message
+                            )
                         )
-                    )
+                    }
+                    anyErrors = true
+                    return@map
                 }
-                anyErrors = true
+            }
+
+        if(keys.contains(PASSWORD_KEY))
+            validators[PASSWORD_KEY]?.map { validate ->
+                if (validate.rule(state.value.password)) {
+                    _state.update {
+                        it.copy(
+                            errors = it.errors.copy(
+                                password = validate.message
+                            )
+                        )
+                    }
+                    anyErrors = true
+                }
+
                 return@map
             }
-        }
 
-        validators[PASSWORD_KEY]?.map { validate ->
-            if (validate.rule(state.value.password)) {
-                _state.update {
-                    it.copy(
-                        errors = it.errors.copy(
-                            password = validate.message
+        if(keys.contains(FULL_NAME_KEY))
+            validators[FULL_NAME_KEY]?.map { validate ->
+                if (validate.rule(state.value.fullName)) {
+                    _state.update {
+                        it.copy(
+                            errors = it.errors.copy(
+                                fullName = validate.message
+                            )
                         )
-                    )
+                    }
+                    anyErrors = true
                 }
-                anyErrors = true
+                return@map
             }
-
-            return@map
-        }
 
         return anyErrors.not()
     }

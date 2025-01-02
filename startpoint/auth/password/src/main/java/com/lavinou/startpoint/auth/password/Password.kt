@@ -23,7 +23,8 @@ class Password internal constructor(
     val validators: Map<String, List<PasswordValidator>>
 ) {
 
-    private val passwordViewModel = PasswordViewModel(
+    internal val passwordViewModel = PasswordViewModel(
+        backend = backend,
         validators = validators
     )
 
@@ -70,6 +71,7 @@ class Password internal constructor(
             navHostController = navHostController,
             state = state.value,
             onDispatchAction = passwordViewModel::dispatch,
+            isValid = passwordViewModel::isValid
         )
     }
 

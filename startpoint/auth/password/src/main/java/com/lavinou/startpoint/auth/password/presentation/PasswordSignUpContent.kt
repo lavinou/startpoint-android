@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -18,27 +19,38 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.credentials.CreatePasswordRequest
 import androidx.navigation.NavHostController
 import com.lavinou.startpoint.auth.coreui.remember.rememberCredentialManager
 import com.lavinou.startpoint.auth.coreui.textfield.AuthTextField
+import com.lavinou.startpoint.auth.password.Password.Provider.FULL_NAME_KEY
+import com.lavinou.startpoint.auth.password.Password.Provider.PASSWORD_KEY
+import com.lavinou.startpoint.auth.password.Password.Provider.USER_KEY
 import com.lavinou.startpoint.auth.password.presentation.action.PasswordAction
 import com.lavinou.startpoint.auth.password.presentation.state.PasswordState
-import kotlinx.coroutines.launch
 
 @Composable
 internal fun PasswordSignUpContent(
     navHostController: NavHostController,
     state: PasswordState,
-    onDispatchAction: (PasswordAction) -> Unit
+    onDispatchAction: (PasswordAction) -> Unit,
+    isValid: (List<String>) -> Boolean
 ) {
 
     val context = LocalContext.current
     val credentialManager = rememberCredentialManager()
     val scope = rememberCoroutineScope()
+    val softKeyboard = LocalSoftwareKeyboardController.current
+
+    fun validateAndSubmit() {
+        if (isValid(listOf(USER_KEY, PASSWORD_KEY, FULL_NAME_KEY))) {
+            softKeyboard?.hide()
+        }
+    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -66,11 +78,18 @@ internal fun PasswordSignUpContent(
                     )
                 },
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
                 ),
                 trailingIcon = {
                     Icon(imageVector = Icons.Default.Email, contentDescription = "email-icon")
-                }
+                },
+                supportingText = state.errors.email?.let { error ->
+                    {
+                        Text(error)
+                    }
+                },
+                isError = state.errors.email != null
             )
 
             AuthTextField(
@@ -84,11 +103,18 @@ internal fun PasswordSignUpContent(
                     )
                 },
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
                 ),
                 trailingIcon = {
                     Icon(imageVector = Icons.Default.Person, contentDescription = "person-icon")
-                }
+                },
+                supportingText = state.errors.fullName?.let { error ->
+                    {
+                        Text(error)
+                    }
+                },
+                isError = state.errors.fullName != null
             )
 
             AuthTextField(
@@ -103,24 +129,28 @@ internal fun PasswordSignUpContent(
                 },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        validateAndSubmit()
+                    }
                 ),
                 trailingIcon = {
                     Icon(imageVector = Icons.Default.Lock, contentDescription = "lock-icon")
-                }
+                },
+                supportingText = state.errors.password?.let { error ->
+                    {
+                        Text(error)
+                    }
+                },
+                isError = state.errors.password != null
             )
 
             Button(
                 onClick = {
-                    scope.launch {
-                        credentialManager.createCredential(
-                            context = context,
-                            request = CreatePasswordRequest(
-                                id = state.email,
-                                password = state.password
-                            )
-                        )
-                    }
+                    validateAndSubmit()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
