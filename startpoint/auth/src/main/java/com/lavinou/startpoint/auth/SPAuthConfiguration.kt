@@ -18,7 +18,7 @@ import kotlin.reflect.KClass
 class SPAuthConfiguration internal constructor(
     private val context: Context,
     public val storage: SPAuthStorage = DefaultSPAuthStorage(context)
-){
+) {
 
     /**
      * The title displayed during the authentication process.
@@ -44,6 +44,12 @@ class SPAuthConfiguration internal constructor(
      * An optional image associated with the authentication process.
      */
     public var image: Any? = null
+
+    /**
+     * Exit application on user canceling authentication flow.
+     * If all routes are **NOT** protected set this to false
+     */
+    public var exitOnUserCancel: Boolean = true
 
     /**
      * A map that holds user session managers by user type.

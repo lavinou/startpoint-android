@@ -27,7 +27,9 @@ internal fun ConfirmPasswordResetContent(
             .padding(48.dp)
     ) {
 
-        AuthHeader(navHostController = navHostController, title = "Reset Password")
+        AuthHeader(onBack = {
+            navHostController.popBackStack()
+        }, title = "Reset Password")
 
         AuthTextField(label = "Password", value = "", onValueChange = {})
         AuthTextField(label = "Confirm Password", value = "", onValueChange = {})

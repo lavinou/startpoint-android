@@ -1,5 +1,6 @@
 package com.lavinou.startpoint.auth
 
+import android.util.Log
 import com.lavinou.startpoint.auth.backend.SPUserSessionBackend
 import com.lavinou.startpoint.auth.backend.model.SPAuthToken
 import com.lavinou.startpoint.auth.storage.SPAuthStorage
@@ -7,8 +8,11 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
@@ -29,13 +33,9 @@ class SPAuthUserSession<out TUser : SPAuthUser<*>>(
     private var currentToken: SPAuthToken? = null
     private var currentUser: TUser? = null
     private val scope = CoroutineScope(dispatcher)
-
-    init {
-        currentToken = storage.retrieve()
-        scope.launch {
-            currentUser = user(currentToken)
-        }
-    }
+    private val _isAuthenticated = MutableStateFlow(currentToken?.accessToken.isNullOrBlank().not())
+    val isAuthenticated: StateFlow<Boolean>
+        get() = _isAuthenticated
 
     /**
      * The currently authenticated user, if available.
@@ -48,13 +48,16 @@ class SPAuthUserSession<out TUser : SPAuthUser<*>>(
      */
     public val userFlow: Flow<TUser>
         get() = storage.tokenFlow
-            .distinctUntilChanged()
             .map {
-                updateUser(it)
+                updateUserAndToken(it)
             }
 
     init {
         currentToken = storage.retrieve()
+        _isAuthenticated.update { currentToken?.accessToken.isNullOrBlank().not() }
+        scope.launch {
+            updateUserAndToken(currentToken)
+        }
     }
 
     /**
@@ -63,8 +66,12 @@ class SPAuthUserSession<out TUser : SPAuthUser<*>>(
      * @return True if logout was successful, false otherwise.
      */
     public suspend fun logout(): Boolean {
-        currentToken?.let { token ->
-            backend.logout(token)
+        if (isLoggedIn()) {
+            try {
+                backend.logout(currentToken!!)
+            } catch (e: Exception) {
+                Log.e("SPAuthUserSession", e.message, e)
+            }
         }
         currentToken = null
         storage.save(null)
@@ -77,7 +84,8 @@ class SPAuthUserSession<out TUser : SPAuthUser<*>>(
      * @return True if the user is logged in and the token is valid, false otherwise.
      */
     public fun isLoggedIn(): Boolean {
-        return currentToken != null && currentToken?.accessToken != null
+        currentToken = storage.retrieve()
+        return currentToken?.accessToken.isNullOrBlank().not()
                 && currentToken!!.expiresAt > System.currentTimeMillis()
     }
 
@@ -85,7 +93,9 @@ class SPAuthUserSession<out TUser : SPAuthUser<*>>(
         return backend.user(token)
     }
 
-    private suspend fun updateUser(token: SPAuthToken?): TUser {
+    private suspend fun updateUserAndToken(token: SPAuthToken?): TUser {
+        currentToken = token
+        _isAuthenticated.update { currentToken?.accessToken.isNullOrBlank().not() }
         val newUser = user(token)
         currentUser = newUser
         return newUser

@@ -37,7 +37,7 @@ fun StartPointConfiguration.installAuth(
     context: Context
 ) {
 
-    val domain = "192.168.1.225"
+    val domain = "192.168.5.23"
     val appStorage = DefaultSPAuthStorage(context)
 
     val client: HttpClient = HttpClient(CIO) {
@@ -98,10 +98,14 @@ fun StartPointConfiguration.installAuth(
     install(SPAuth) {
 
         title = "Welcome"
+
         signInButtonRoute = PasswordSignIn
         signUpButtonRoute = PasswordSignUp
+
         image =
             "https://upload.wikimedia.org/wikipedia/commons/6/64/Android_logo_2019_%28stacked%29.svg"
+
+        exitOnUserCancel = false
 
         setUserSessionBackend(userSessionBackend)
 

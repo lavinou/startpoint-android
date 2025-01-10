@@ -50,15 +50,10 @@ dependencies {
 
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
-    implementation(libs.bundles.navigation)
     implementation(libs.google.material)
     implementation(libs.bundles.coil)
 
-    //Credentials
-    api(libs.bundles.credentials)
-
-    // serialization
-    implementation(libs.kotlinx.serialization)
+    implementation(libs.bundles.credentials)
 
     debugImplementation(libs.compose.ui.tooling)
     testImplementation(libs.bundles.test)

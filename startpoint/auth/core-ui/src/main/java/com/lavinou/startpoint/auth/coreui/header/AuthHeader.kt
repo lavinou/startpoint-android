@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -16,11 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 
 @Composable
 fun AuthHeader(
-    navHostController: NavHostController,
+    onBack: () -> Unit,
     title: String? = null
 ) {
     Column(
@@ -34,9 +32,7 @@ fun AuthHeader(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "back-arrow",
-                modifier = Modifier.clickable {
-                    navHostController.popBackStack()
-                }
+                modifier = Modifier.clickable(onClick = onBack)
             )
 
             Icon(imageVector = Icons.Default.Face, contentDescription = "login")

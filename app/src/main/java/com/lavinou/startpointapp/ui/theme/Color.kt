@@ -2,10 +2,10 @@ package com.lavinou.startpointapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Green80 = Color(0xFF3ddc84)  // Android Green --ifm-color-primary
-val GreenGrey80 = Color(0xFF81f2c3)  // Light variant --ifm-color-primary-lightest
-val Blue80 = Color(0xFF4285f4)  // Android Blue --ifm-color-secondary-light
+val SkyBlue80 = Color(0xFF1DA1F2)  // Social Blue --ifm-color-primary (similar to Twitter blue)
+val SoftPink80 = Color(0xFFFF69B4)  // Friendly Pink --ifm-color-primary-lightest
+val Yellow80 = Color(0xFFFFD700)  // Highlight Yellow --ifm-color-secondary-light
 
-val Green40 = Color(0xFF2bb673)  // Darker Android Green --ifm-color-primary-dark
-val GreenGrey40 = Color(0xFF1c7a4f)  // Darkest Green --ifm-color-primary-darkest
-val Blue40 = Color(0xFF1765cc)
+val SkyBlue40 = Color(0xFF0d81d9)  // Darker Social Blue --ifm-color-primary-dark
+val SoftPink40 = Color(0xFFD94E8F)  // Deeper Pink --ifm-color-primary-darkest
+val Yellow40 = Color(0xFFCCAC00)  // Rich Yellow --ifm-color-secondary-dark

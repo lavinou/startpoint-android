@@ -1,5 +1,6 @@
 package com.lavinou.startpoint.auth.password.presentation.viewmodel
 
+import android.util.Log
 import androidx.credentials.PasswordCredential
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -94,6 +95,7 @@ internal class PasswordViewModel(
                                 )
                             )
                         }
+                        Log.e("PasswordViewModel", e.message, e)
                     } finally {
                         dispatch(PasswordAction.OnViewLoad(false))
                     }

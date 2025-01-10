@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.lavinou.startpoint.auth.coreui.header.AuthHeader
 import com.lavinou.startpoint.auth.coreui.remember.rememberCredentialManager
 import com.lavinou.startpoint.auth.coreui.textfield.AuthTextField
 import com.lavinou.startpoint.auth.password.Password.Provider.FULL_NAME_KEY
@@ -59,8 +60,10 @@ internal fun PasswordSignUpContent(
             .fillMaxSize()
             .padding(24.dp)
     ) {
-        com.lavinou.startpoint.auth.coreui.header.AuthHeader(
-            navHostController = navHostController,
+        AuthHeader(
+            onBack = {
+                navHostController.popBackStack()
+            },
             title = "Sign Up"
         )
 

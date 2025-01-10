@@ -127,7 +127,9 @@ internal fun PasswordSignInContent(
             .padding(24.dp)
     ) {
         AuthHeader(
-            navHostController = navHostController,
+            onBack = {
+                navHostController.popBackStack()
+            },
             title = "Sign In"
         )
 

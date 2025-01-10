@@ -1,5 +1,6 @@
 package com.lavinou.startpoint.auth.navigation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.navigation.navigation
 import com.lavinou.startpoint.auth.SPAuth
 import com.lavinou.startpoint.auth.coreui.header.AuthHeader
 import com.lavinou.startpoint.auth.coreui.image.AsyncImage
+import com.lavinou.startpoint.navigation.MainContent
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -44,6 +46,12 @@ internal fun NavGraphBuilder.auth(
 
         composable<StartPointAuthRoute> {
 
+            val onBack: () -> Unit = {
+                auth.onCancel?.invoke()
+                navHostController.popBackStack(MainContent, inclusive = false)
+            }
+
+            BackHandler(onBack = onBack)
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -53,7 +61,8 @@ internal fun NavGraphBuilder.auth(
             ) {
 
                 AuthHeader(
-                    navHostController = navHostController
+                    onBack = onBack,
+                    title = auth.title
                 )
 
                 AsyncImage(

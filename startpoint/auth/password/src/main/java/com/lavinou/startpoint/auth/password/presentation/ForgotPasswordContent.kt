@@ -55,7 +55,9 @@ internal fun ForgotPasswordContent(
             .padding(24.dp)
     ) {
         AuthHeader(
-            navHostController = navHostController,
+            onBack = {
+                navHostController.popBackStack()
+            },
             title = "Let get you back in!"
         )
 

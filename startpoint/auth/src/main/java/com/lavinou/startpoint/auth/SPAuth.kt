@@ -9,6 +9,7 @@ import com.lavinou.startpoint.attribute.AttributeKey
 import com.lavinou.startpoint.attribute.Attributes
 import com.lavinou.startpoint.auth.backend.SPAuthenticationBackend
 import com.lavinou.startpoint.auth.backend.model.SPAuthToken
+import com.lavinou.startpoint.auth.navigation.StartPointAuthRoute
 import com.lavinou.startpoint.auth.navigation.auth
 import com.lavinou.startpoint.dsl.StartPointDsl
 import com.lavinou.startpoint.navigation.MainContent
@@ -65,11 +66,18 @@ class SPAuth internal constructor(
             return config.onComplete
         }
 
+    /**
+     * Exit application on user canceling authentication flow
+     */
+    val existOnUserCancel: Boolean = config.exitOnUserCancel
+
     internal val attributes: Attributes = Attributes(concurrent = true)
 
     internal val installedProvider: MutableList<SPAuthProvider<*, *>> = mutableListOf()
 
     private var _onComplete: (suspend () -> Unit)? = null
+    internal var onCancel: (() -> Unit)? = null
+        private set
 
     private val backends = mutableListOf<SPAuthenticationBackend>()
 
@@ -93,6 +101,10 @@ class SPAuth internal constructor(
 
     internal fun setOnComplete(callback: suspend () -> Unit) {
         _onComplete = callback
+    }
+
+    public fun setOnCancel(callback: () -> Unit) {
+        onCancel = callback
     }
 
     /**
