@@ -23,9 +23,11 @@ dependencyResolutionManagement {
 rootProject.name = "StartPointApp"
 include(":app")
 include(":startpoint")
+include(":startpoint:bom")
+include(":startpoint:core")
 include(":startpoint:auth")
 include(":startpoint:auth:password")
 include(":startpoint:auth:passkey")
 include(":startpoint:auth:core-ui")
-include(":startpoint:core")
-include(":startpoint:bom")
+include(":startpoint:auth:biometric")
+

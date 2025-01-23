@@ -3,15 +3,18 @@ package com.lavinou.startpointapp.auth
 import android.content.Context
 import com.lavinou.startpoint.StartPointConfiguration
 import com.lavinou.startpoint.auth.SPAuth
+import com.lavinou.startpoint.auth.biometric.Biometric
+import com.lavinou.startpoint.auth.biometric.navigation.BiometricSignIn
+import com.lavinou.startpoint.auth.navigation.SPAuthNextAction
 import com.lavinou.startpoint.auth.password.Password
-import com.lavinou.startpoint.auth.password.Password.Provider.FULL_NAME_KEY
-import com.lavinou.startpoint.auth.password.Password.Provider.PASSWORD_KEY
-import com.lavinou.startpoint.auth.password.Password.Provider.USER_KEY
-import com.lavinou.startpoint.auth.password.navigation.PasswordSignIn
 import com.lavinou.startpoint.auth.password.navigation.PasswordSignUp
 import com.lavinou.startpoint.auth.storage.DefaultSPAuthStorage
+import com.lavinou.startpointapp.R
 import com.lavinou.startpointapp.auth.backend.AppUserSessionBackend
+import com.lavinou.startpointapp.auth.backend.DefaultBiometricSPAuthBackend
 import com.lavinou.startpointapp.auth.backend.DefaultPasswordSPAuthBackend
+import com.lavinou.startpointapp.auth.result.resultHandlers
+import com.lavinou.startpointapp.auth.validation.passwordValidators
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -95,46 +98,39 @@ fun StartPointConfiguration.installAuth(
         baseUrl = "http://$domain:8000"
     )
 
+    val biometricBackend = DefaultBiometricSPAuthBackend(
+        client = client,
+        baseUrl = "http://$domain:8000"
+    )
+
     install(SPAuth) {
 
         title = "Welcome"
 
-        signInButtonRoute = PasswordSignIn
+        signInButtonRoute = BiometricSignIn
         signUpButtonRoute = PasswordSignUp
 
-        image =
-            "https://upload.wikimedia.org/wikipedia/commons/6/64/Android_logo_2019_%28stacked%29.svg"
+        image = R.drawable.crypto_currency_bitcoins_by_vexels
 
         exitOnUserCancel = false
 
         setUserSessionBackend(userSessionBackend)
 
         addProvider(Password) {
+            backend = passwordBackend
+            passwordValidators()
+            resultHandlers()
+        }
 
-            setBackend(passwordBackend)
+        addProvider(Biometric) {
 
-            addValidator(
-                key = USER_KEY,
-                rule = { value -> value.isBlank() },
-                message = "make sure to enter an email address"
-            )
-            addValidator(
-                key = PASSWORD_KEY,
-                rule = { value -> value.isBlank() },
-                message = "Please add your password"
-            )
-            addValidator(
-                key = PASSWORD_KEY,
-                rule = { value -> value.length in 1..7 },
-                message = "password is too short."
-            )
+            backend = biometricBackend
 
-            addValidator(
-                key = FULL_NAME_KEY,
-                rule = { value -> value.isBlank() },
-                message = "Please add full name"
-            )
+            image = R.drawable.baseline_fingerprint_24
 
+            onResult = {
+                SPAuthNextAction.NavigateTo(PasswordSignUp)
+            }
         }
     }
 }

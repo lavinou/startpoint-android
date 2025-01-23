@@ -24,6 +24,11 @@ internal sealed interface PasswordAction {
         val scope: SPAuth
     ) : PasswordAction
 
+    data class ShowFieldError(
+        val field: String,
+        val message: String
+    ) : PasswordAction
+
     data object OnPasswordReset : PasswordAction
 
     data object ResetForm : PasswordAction

@@ -59,8 +59,9 @@ dependencies {
         implementation(project(":startpoint:core"))
         implementation(project(":startpoint:auth"))
         implementation(project(":startpoint:auth:password"))
+        implementation(project(":startpoint:auth:biometric"))
     } else {
-        implementation(platform("com.github.lavinou.startpoint-android:bom:0.2.1"))
+        implementation(platform("com.github.lavinou.startpoint-android:bom:0.3.0"))
         implementation("com.github.lavinou.startpoint-android:core")
         implementation("com.github.lavinou.startpoint-android:auth")
         implementation("com.github.lavinou.startpoint-android:auth-password")

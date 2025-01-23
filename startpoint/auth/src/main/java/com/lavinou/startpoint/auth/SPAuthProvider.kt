@@ -39,41 +39,42 @@ public interface SPAuthProvider<out TConfig : Any, TProvider : Any> {
     /**
      * Installs the configured provider into the SPAuth instance.
      *
-     * @param plugin The provider instance to install.
+     * @param provider The provider instance to install.
      * @param scope The SPAuth instance where the provider will be applied.
      */
-    public fun install(plugin: TProvider, scope: SPAuth)
+    public fun install(provider: TProvider, scope: SPAuth)
 }
 
 /**
  * Retrieves a provider instance if it exists within the SPAuth scope.
  *
- * @param plugin The authentication provider to search for.
+ * @param provider The authentication provider to search for.
  * @return The provider instance if found, otherwise null.
  */
-public fun <B : Any, F : Any> SPAuth.providerOrNull(plugin: SPAuthProvider<B, F>): F? =
-    attributes.getOrNull(PROVIDER_INSTALLED_LIST)?.getOrNull(plugin.key)
+public fun <B : Any, F : Any> SPAuth.providerOrNull(provider: SPAuthProvider<B, F>): F? =
+    attributes.getOrNull(PROVIDER_INSTALLED_LIST)?.getOrNull(provider.key)
 
 /**
  * Retrieves a provider instance, or throws an exception if the provider is not installed.
  *
- * @param plugin The authentication provider to retrieve.
+ * @param provider The authentication provider to retrieve.
  * @return The installed provider instance.
  * @throws IllegalStateException if the provider is not installed.
  */
-public fun <B : Any, F : Any> SPAuth.provider(plugin: SPAuthProvider<B, F>): F {
-    return providerOrNull(plugin) ?: throw IllegalStateException(
-        "Plugin $plugin is not installed. Consider using `install(${plugin.key})` in client config first."
+public fun <B : Any, F : Any> SPAuth.provider(provider: SPAuthProvider<B, F>): F {
+    return providerOrNull(provider) ?: throw IllegalStateException(
+        "Plugin $provider is not installed. Consider using `install(${provider.key})` in client config first."
     )
 }
 
 /**
  * Checks if any provider other than the specified one is installed in SPAuth.
  *
- * @param plugin The provider to exclude from the check.
+ * @param provider The provider to exclude from the check.
  * @return True if there are other installed providers, false otherwise.
  */
-public fun <B : Any, F : Any> SPAuth.containsAnyBut(plugin: SPAuthProvider<B, F>): Boolean {
-    return attributes.getOrNull(PROVIDER_INSTALLED_LIST)?.allKeys?.any { plugin.key != it } ?: false
+public fun <B : Any, F : Any> SPAuth.containsAnyBut(provider: SPAuthProvider<B, F>): Boolean {
+    return attributes.getOrNull(PROVIDER_INSTALLED_LIST)?.allKeys?.any { provider.key != it }
+        ?: false
 }
 

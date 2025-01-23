@@ -9,13 +9,9 @@ import com.lavinou.startpoint.attribute.AttributeKey
 import com.lavinou.startpoint.attribute.Attributes
 import com.lavinou.startpoint.auth.backend.SPAuthenticationBackend
 import com.lavinou.startpoint.auth.backend.model.SPAuthToken
-import com.lavinou.startpoint.auth.navigation.StartPointAuthRoute
 import com.lavinou.startpoint.auth.navigation.auth
 import com.lavinou.startpoint.dsl.StartPointDsl
-import com.lavinou.startpoint.navigation.MainContent
 import com.lavinou.startpoint.plugin
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 /**
  * SPAuth is the primary class responsible for managing authentication
@@ -160,9 +156,9 @@ class SPAuth internal constructor(
 
         override fun install(plugin: SPAuth, scope: StartPoint) {
             plugin.setOnComplete {
-                withContext(Dispatchers.Main) {
-                    scope.navigation.popBackStack(MainContent, inclusive = false)
-                }
+//                withContext(Dispatchers.Main) {
+//                    scope.navigation.popBackStack(MainContent, inclusive = false)
+//                }
             }
             current = plugin
         }
@@ -185,3 +181,10 @@ class SPAuth internal constructor(
 inline fun <reified TUser : SPAuthUser<*>> StartPoint.userSession(): SPAuthUserSession<TUser> {
     return plugin(SPAuth).userSession()
 }
+
+/**
+ * Helper to get [SPAUth] without using plugin
+ * @returns SPAUth
+ */
+val StartPoint.auth: SPAuth
+    get() = plugin(SPAuth)

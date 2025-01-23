@@ -2,6 +2,7 @@ package com.lavinou.startpoint.auth.coreui.image
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import coil3.request.ImageRequest
 import coil3.compose.AsyncImage
@@ -11,6 +12,7 @@ import coil3.svg.SvgDecoder
 fun AsyncImage(
     model: Any?,
     contentDescription: String? = null,
+    colorFilter: ColorFilter? = null,
     modifier: Modifier = Modifier
 ) {
     AsyncImage(
@@ -19,6 +21,7 @@ fun AsyncImage(
             .decoderFactory(SvgDecoder.Factory())
             .build(),
         contentDescription = contentDescription,
+        colorFilter = colorFilter,
         modifier = modifier
     )
 }

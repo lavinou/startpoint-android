@@ -9,6 +9,8 @@ import com.lavinou.startpoint.attribute.AttributeKey
 import com.lavinou.startpoint.auth.SPAuth
 import com.lavinou.startpoint.auth.SPAuthProvider
 import com.lavinou.startpoint.auth.backend.model.SPAuthToken
+import com.lavinou.startpoint.auth.navigation.SPAuthNextAction
+import com.lavinou.startpoint.auth.navigation.nextActionNavigateTo
 import com.lavinou.startpoint.auth.password.model.PasswordValidator
 import com.lavinou.startpoint.auth.password.navigation.password
 import com.lavinou.startpoint.auth.password.presentation.PasswordSignInContent
@@ -17,18 +19,18 @@ import com.lavinou.startpoint.auth.password.presentation.action.PasswordAction
 import com.lavinou.startpoint.auth.password.presentation.effect.PasswordEffect
 import com.lavinou.startpoint.auth.password.presentation.viewmodel.PasswordViewModel
 import com.lavinou.startpoint.dsl.StartPointDsl
+import com.lavinou.startpoint.navigation.MainContent
 
 class Password internal constructor(
     private val backend: PasswordSPAuthBackend,
-    private val validators: Map<String, List<PasswordValidator>>
+    private val validators: Map<String, List<PasswordValidator>>,
+    private val onResult: ((PasswordResult) -> SPAuthNextAction)? = null
 ) {
 
     internal val passwordViewModel = PasswordViewModel(
         backend = backend,
         validators = validators
     )
-
-    private var _onSuccess: (suspend (SPAuthToken) -> Unit)? = null
 
     @Composable
     internal fun SignInContent(
@@ -40,14 +42,21 @@ class Password internal constructor(
         val effect = passwordViewModel.effect.collectAsState()
 
         LaunchedEffect(key1 = effect.value, block = {
-            when (val result = effect.value) {
-                is PasswordEffect.OnSuccess -> {
-                    _onSuccess?.invoke(result.token)
-                    passwordViewModel.dispatch(PasswordAction.ResetForm)
-
+            val result = effect.value
+            result?.let {
+                when(val action = onResult?.invoke(result)) {
+                    is SPAuthNextAction.NavigateTo -> {
+                        passwordViewModel.dispatch(PasswordAction.ResetForm)
+                        navHostController.nextActionNavigateTo(action)
+                    }
+                    is SPAuthNextAction.FieldMessage -> {
+                        passwordViewModel.dispatch(PasswordAction.ShowFieldError(
+                            field = action.field,
+                            message = action.message
+                        ))
+                    }
+                    else -> Unit
                 }
-
-                else -> Unit
             }
         })
 
@@ -66,17 +75,12 @@ class Password internal constructor(
     ) {
         val state = passwordViewModel.state.collectAsState()
 
-
         PasswordSignUpContent(
             navHostController = navHostController,
             state = state.value,
             onDispatchAction = passwordViewModel::dispatch,
             isValid = passwordViewModel::isValid
         )
-    }
-
-    internal fun onSuccess(callback: suspend (SPAuthToken) -> Unit) {
-        _onSuccess = callback
     }
 
     @StartPointDsl
@@ -102,14 +106,10 @@ class Password internal constructor(
                 }
             }
 
-        override fun install(plugin: Password, scope: SPAuth) {
-            currentPlugin = plugin
+        override fun install(provider: Password, scope: SPAuth) {
+            currentPlugin = provider
             currentScope = scope
-            scope.addAuthBackend(plugin.backend)
-            plugin.onSuccess { value ->
-                scope.onComplete?.invoke(value)
-            }
-
+            scope.addAuthBackend(provider.backend)
         }
 
         override fun prepare(block: PasswordConfiguration.() -> Unit): Password {

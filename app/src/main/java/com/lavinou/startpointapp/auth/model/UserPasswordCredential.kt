@@ -19,3 +19,14 @@ data class CredentialResponse(
     val access: String,
     val user: UserResponse
 )
+
+@Serializable
+data class TokenResponse(
+    val refresh: String,
+    val access: String
+)
+
+@Serializable
+data class ChallengeResponse(
+    val challenge: String
+)

@@ -44,8 +44,10 @@ internal fun PasskeyOtherWaysToSignUpContent(
             .padding(24.dp)
     ) {
         com.lavinou.startpoint.auth.coreui.header.AuthHeader(
-            navHostController = navHostController,
-            title = "Other options"
+            title = "Other options",
+            onBack = {
+                navHostController.popBackStack()
+            }
         )
 
         Column {
