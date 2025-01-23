@@ -29,10 +29,7 @@ fun NavGraphBuilder.biometricGraph(
     biometric?.let {
         dialog<BiometricSignIn> {
             val onBack: () -> Unit = {
-                biometric.onCancelRoute?.let {
-                    navController.popBackStack()
-                    navController.navigate(it)
-                }
+                navController.popBackStack()
             }
             BackHandler(onBack = onBack)
             val activity = LocalContext.current.getActivityOrNull() as FragmentActivity
@@ -42,8 +39,7 @@ fun NavGraphBuilder.biometricGraph(
                 onSuccess = { id, sign ->
                     val credential = BiometricCredential(id, sign)
                     auth.authenticate(credential)
-                },
-                onCancel = onBack
+                }
             )
         }
 

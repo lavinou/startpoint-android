@@ -51,8 +51,6 @@ class Biometric(
     private val configuration: BiometricConfiguration
 ) {
 
-    internal val onCancelRoute: Any? = configuration.onCancelRoute
-
     private val promptInfo = BiometricPrompt.PromptInfo.Builder()
         .setTitle(configuration.title)
         .setSubtitle(configuration.subTitle)
@@ -100,7 +98,6 @@ class Biometric(
         fragment: FragmentActivity,
         navController: NavController,
         onSuccess: suspend (BiometricIdentifier, String) -> SPAuthToken,
-        onCancel: () -> Unit,
         modifier: Modifier = Modifier
     ) {
 
@@ -112,7 +109,17 @@ class Biometric(
             fragment = fragment,
             executor = executor,
             scope = scope,
-            onCancel = onCancel,
+            onCancel = {
+                val action = configuration.onResult?.invoke(BiometricResult.OnUserCancelled)
+                when (action) {
+                    is SPAuthNextAction.NavigateTo -> {
+                        navController.nextActionNavigateTo(action)
+                    }
+
+                    else -> Unit
+                }
+
+            },
             onSuccess = { result ->
                 scope.launch {
                     val id = BiometricIdentifier(

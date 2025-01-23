@@ -4,11 +4,14 @@ import android.content.Context
 import com.lavinou.startpoint.StartPointConfiguration
 import com.lavinou.startpoint.auth.SPAuth
 import com.lavinou.startpoint.auth.biometric.Biometric
+import com.lavinou.startpoint.auth.biometric.BiometricResult
 import com.lavinou.startpoint.auth.biometric.navigation.BiometricSignIn
 import com.lavinou.startpoint.auth.navigation.SPAuthNextAction
 import com.lavinou.startpoint.auth.password.Password
+import com.lavinou.startpoint.auth.password.navigation.PasswordSignIn
 import com.lavinou.startpoint.auth.password.navigation.PasswordSignUp
 import com.lavinou.startpoint.auth.storage.DefaultSPAuthStorage
+import com.lavinou.startpoint.navigation.MainContent
 import com.lavinou.startpointapp.R
 import com.lavinou.startpointapp.auth.backend.AppUserSessionBackend
 import com.lavinou.startpointapp.auth.backend.DefaultBiometricSPAuthBackend
@@ -128,8 +131,32 @@ fun StartPointConfiguration.installAuth(
 
             image = R.drawable.baseline_fingerprint_24
 
-            onResult = {
-                SPAuthNextAction.NavigateTo(PasswordSignUp)
+            onResult = { result ->
+                when (result) {
+                    is BiometricResult.Success -> {
+                        SPAuthNextAction.NavigateTo(MainContent)
+                    }
+
+                    is BiometricResult.RegistrationSuccess -> {
+                        SPAuthNextAction.NavigateTo(MainContent)
+                    }
+
+                    is BiometricResult.OnUserCancelled -> {
+                        SPAuthNextAction.NavigateTo(
+                            route = PasswordSignIn,
+                            keepBackStack = false
+                        )
+                    }
+
+                    is BiometricResult.Failure -> {
+                        // handle failure
+                        SPAuthNextAction.DisplayMessage(
+                            "Something Went Wrong",
+                            "Unable to biometric successfully"
+                        )
+                    }
+                }
+
             }
         }
     }

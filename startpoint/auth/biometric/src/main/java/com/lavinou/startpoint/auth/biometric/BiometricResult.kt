@@ -13,4 +13,6 @@ sealed interface BiometricResult {
     ) : BiometricResult
 
     data object RegistrationSuccess: BiometricResult
+
+    data object OnUserCancelled: BiometricResult
 }

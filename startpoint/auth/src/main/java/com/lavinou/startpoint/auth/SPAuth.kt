@@ -54,15 +54,6 @@ class SPAuth internal constructor(
     val userSessions = config.userSessions
 
     /**
-     * A suspendable function invoked upon successful authentication,
-     * passing the generated authentication token.
-     */
-    val onComplete: (suspend (SPAuthToken) -> Unit)?
-        get() {
-            return config.onComplete
-        }
-
-    /**
      * Exit application on user canceling authentication flow
      */
     val existOnUserCancel: Boolean = config.exitOnUserCancel
@@ -71,7 +62,6 @@ class SPAuth internal constructor(
 
     internal val installedProvider: MutableList<SPAuthProvider<*, *>> = mutableListOf()
 
-    private var _onComplete: (suspend () -> Unit)? = null
     internal var onCancel: (() -> Unit)? = null
         private set
 
@@ -95,10 +85,6 @@ class SPAuth internal constructor(
         backends.add(authenticate)
     }
 
-    internal fun setOnComplete(callback: suspend () -> Unit) {
-        _onComplete = callback
-    }
-
     public fun setOnCancel(callback: () -> Unit) {
         onCancel = callback
     }
@@ -117,7 +103,6 @@ class SPAuth internal constructor(
             ?: error("Credential Provider not found: ${credential.type}")
         val token = authenticator.authenticate(credential)
         config.storage.save(token)
-        _onComplete?.invoke()
         return token
     }
 
@@ -155,11 +140,6 @@ class SPAuth internal constructor(
             }
 
         override fun install(plugin: SPAuth, scope: StartPoint) {
-            plugin.setOnComplete {
-//                withContext(Dispatchers.Main) {
-//                    scope.navigation.popBackStack(MainContent, inclusive = false)
-//                }
-            }
             current = plugin
         }
 

@@ -12,8 +12,6 @@ class BiometricConfiguration {
 
     var backend: BiometricSPAuthBackend? = null
 
-    var onCancelRoute: Any? = null
-
     var onResult: ((BiometricResult) -> SPAuthNextAction)? = null
 
     /**

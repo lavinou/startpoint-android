@@ -11,7 +11,7 @@ fun PasswordConfiguration.resultHandlers() {
     onResult = { result ->
         when (result) {
             is PasswordResult.Success -> {
-                if (result.registerForBiometrics)
+                if (result.registerForBiometrics.not())
                     SPAuthNextAction.NavigateTo(
                         route = BiometricRegistration
                     )
