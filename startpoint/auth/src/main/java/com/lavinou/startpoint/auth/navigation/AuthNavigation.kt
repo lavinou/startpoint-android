@@ -90,7 +90,6 @@ internal fun NavGraphBuilder.auth(
                     ) {
                         Text(text = "Sign In")
                     }
-
                 }
             }
         }

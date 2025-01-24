@@ -9,13 +9,9 @@ import com.lavinou.startpoint.attribute.AttributeKey
 import com.lavinou.startpoint.attribute.Attributes
 import com.lavinou.startpoint.auth.backend.SPAuthenticationBackend
 import com.lavinou.startpoint.auth.backend.model.SPAuthToken
-import com.lavinou.startpoint.auth.navigation.StartPointAuthRoute
 import com.lavinou.startpoint.auth.navigation.auth
 import com.lavinou.startpoint.dsl.StartPointDsl
-import com.lavinou.startpoint.navigation.MainContent
 import com.lavinou.startpoint.plugin
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 /**
  * SPAuth is the primary class responsible for managing authentication
@@ -58,15 +54,6 @@ class SPAuth internal constructor(
     val userSessions = config.userSessions
 
     /**
-     * A suspendable function invoked upon successful authentication,
-     * passing the generated authentication token.
-     */
-    val onComplete: (suspend (SPAuthToken) -> Unit)?
-        get() {
-            return config.onComplete
-        }
-
-    /**
      * Exit application on user canceling authentication flow
      */
     val existOnUserCancel: Boolean = config.exitOnUserCancel
@@ -75,7 +62,6 @@ class SPAuth internal constructor(
 
     internal val installedProvider: MutableList<SPAuthProvider<*, *>> = mutableListOf()
 
-    private var _onComplete: (suspend () -> Unit)? = null
     internal var onCancel: (() -> Unit)? = null
         private set
 
@@ -99,10 +85,6 @@ class SPAuth internal constructor(
         backends.add(authenticate)
     }
 
-    internal fun setOnComplete(callback: suspend () -> Unit) {
-        _onComplete = callback
-    }
-
     public fun setOnCancel(callback: () -> Unit) {
         onCancel = callback
     }
@@ -121,7 +103,6 @@ class SPAuth internal constructor(
             ?: error("Credential Provider not found: ${credential.type}")
         val token = authenticator.authenticate(credential)
         config.storage.save(token)
-        _onComplete?.invoke()
         return token
     }
 
@@ -159,11 +140,6 @@ class SPAuth internal constructor(
             }
 
         override fun install(plugin: SPAuth, scope: StartPoint) {
-            plugin.setOnComplete {
-                withContext(Dispatchers.Main) {
-                    scope.navigation.popBackStack(MainContent, inclusive = false)
-                }
-            }
             current = plugin
         }
 
@@ -185,3 +161,10 @@ class SPAuth internal constructor(
 inline fun <reified TUser : SPAuthUser<*>> StartPoint.userSession(): SPAuthUserSession<TUser> {
     return plugin(SPAuth).userSession()
 }
+
+/**
+ * Helper to get [SPAUth] without using plugin
+ * @returns SPAUth
+ */
+val StartPoint.auth: SPAuth
+    get() = plugin(SPAuth)

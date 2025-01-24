@@ -42,8 +42,8 @@ class FaceBook {
 
             }
 
-        override fun install(plugin: FaceBook, scope: SPAuth) {
-            currentPlugin = plugin
+        override fun install(provider: FaceBook, scope: SPAuth) {
+            currentPlugin = provider
         }
 
         override fun prepare(block: FaceBookConfiguration.() -> Unit): FaceBook {

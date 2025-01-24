@@ -1,18 +1,19 @@
 package com.lavinou.startpoint.auth.password
 
+import com.lavinou.startpoint.auth.backend.model.SPAuthToken
+import com.lavinou.startpoint.auth.navigation.SPAuthNextAction
 import com.lavinou.startpoint.auth.password.model.PasswordValidator
 import com.lavinou.startpoint.dsl.StartPointDsl
+import com.lavinou.startpoint.navigation.MainContent
 
 @StartPointDsl
 public class PasswordConfiguration {
 
-    private var _backend: PasswordSPAuthBackend? = null
+    var onResult: ((PasswordResult) -> SPAuthNextAction)? = null
+
+    var backend: PasswordSPAuthBackend? = null
 
     private val validators = mutableMapOf<String, MutableList<PasswordValidator>>()
-
-    public fun setBackend(backend: PasswordSPAuthBackend) {
-        _backend = backend
-    }
 
     public fun addValidator(key: String, rule: (String) -> Boolean, message: String) {
         val validator = PasswordValidator(
@@ -26,11 +27,12 @@ public class PasswordConfiguration {
 
     internal fun build(): Password {
 
-        val backend = _backend ?: error("Password Auth Backend not set")
+        val backend = backend ?: error("Password Auth Backend not set")
 
         return Password(
             backend = backend,
-            validators = validators
+            validators = validators,
+            onResult = onResult
         )
     }
 }

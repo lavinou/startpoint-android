@@ -11,8 +11,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.lavinou.startpoint.StartPoint
-import com.lavinou.startpoint.auth.protectedRoute
 import com.lavinou.startpoint.auth.navigation.StartPointAuthRoute
+import com.lavinou.startpoint.auth.protectedRoute
 import com.lavinou.startpoint.auth.userSession
 import com.lavinou.startpointapp.auth.model.AppUser
 import kotlinx.coroutines.launch
@@ -52,6 +52,12 @@ fun AppNavHost(
                     }) {
                         Text(text = "Test2")
                     }
+
+                    Button(onClick = {
+                        navHostController.navigate("biometric")
+                    }) {
+                        Text("Biometric")
+                    }
                 }
             }
         }
@@ -87,6 +93,12 @@ fun AppNavHost(
                     navHostController.navigate("test2")
                 }) {
                     Text(text = "Test 2")
+                }
+
+                Button(onClick = {
+                    navHostController.navigate("biometric")
+                }) {
+                    Text("Biometric")
                 }
             }
         }

@@ -53,8 +53,8 @@ class Passkey {
                 }
             }
 
-        override fun install(plugin: Passkey, scope: SPAuth) {
-            currentPlugin = plugin
+        override fun install(provider: Passkey, scope: SPAuth) {
+            currentPlugin = provider
             currentScope = scope
         }
 

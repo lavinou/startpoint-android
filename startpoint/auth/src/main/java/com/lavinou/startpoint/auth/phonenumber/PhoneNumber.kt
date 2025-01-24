@@ -59,8 +59,8 @@ class PhoneNumber {
                 }
             }
 
-        override fun install(plugin: PhoneNumber, scope: SPAuth) {
-            currentPlugin = plugin
+        override fun install(provider: PhoneNumber, scope: SPAuth) {
+            currentPlugin = provider
             currentScope = scope
         }
 

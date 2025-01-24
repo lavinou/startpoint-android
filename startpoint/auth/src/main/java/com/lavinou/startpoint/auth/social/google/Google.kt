@@ -42,8 +42,8 @@ class Google {
 
             }
 
-        override fun install(plugin: Google, scope: SPAuth) {
-            currentPlugin = plugin
+        override fun install(provider: Google, scope: SPAuth) {
+            currentPlugin = provider
         }
 
         override fun prepare(block: GoogleConfiguration.() -> Unit): Google {

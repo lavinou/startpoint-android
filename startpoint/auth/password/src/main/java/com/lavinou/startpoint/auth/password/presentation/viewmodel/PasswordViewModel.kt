@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.lavinou.startpoint.auth.password.Password.Provider.FULL_NAME_KEY
 import com.lavinou.startpoint.auth.password.Password.Provider.PASSWORD_KEY
 import com.lavinou.startpoint.auth.password.Password.Provider.USER_KEY
+import com.lavinou.startpoint.auth.password.PasswordResult
 import com.lavinou.startpoint.auth.password.PasswordSPAuthBackend
 import com.lavinou.startpoint.auth.password.model.PasswordValidator
 import com.lavinou.startpoint.auth.password.presentation.action.PasswordAction
@@ -23,8 +24,8 @@ internal class PasswordViewModel(
     private val validators: Map<String, List<PasswordValidator>> = emptyMap()
 ) : ViewModel() {
 
-    private val _effect = MutableStateFlow<PasswordEffect?>(null)
-    val effect: StateFlow<PasswordEffect?>
+    private val _effect = MutableStateFlow<PasswordResult?>(null)
+    val effect: StateFlow<PasswordResult?>
         get() = _effect
 
     private val _state = MutableStateFlow(PasswordState())
@@ -73,6 +74,10 @@ internal class PasswordViewModel(
                 }
             }
 
+            is PasswordAction.ShowFieldError -> {
+                updateFieldWithErrorMessage(action)
+            }
+
             is PasswordAction.OnSignInSubmit -> {
                 viewModelScope.launch {
                     try {
@@ -85,15 +90,11 @@ internal class PasswordViewModel(
                         )
 
                         _effect.update {
-                            PasswordEffect.OnSuccess(token)
+                            PasswordResult.Success(token, false)
                         }
                     } catch (e: Exception) {
-                        _state.update {
-                            it.copy(
-                                errors = it.errors.copy(
-                                    server = "Email or password is incorrect"
-                                )
-                            )
+                        _effect.update {
+                            PasswordResult.BackendError(e)
                         }
                         Log.e("PasswordViewModel", e.message, e)
                     } finally {
@@ -131,11 +132,10 @@ internal class PasswordViewModel(
         if (keys.contains(USER_KEY))
             validators[USER_KEY]?.map { validate ->
                 if (validate.rule(state.value.email)) {
-                    _state.update {
-                        it.copy(
-                            errors = it.errors.copy(
-                                email = validate.message
-                            )
+                    _effect.update {
+                        PasswordResult.ValidationError(
+                            key = USER_KEY,
+                            message = validate.message
                         )
                     }
                     anyErrors = true
@@ -146,11 +146,10 @@ internal class PasswordViewModel(
         if (keys.contains(PASSWORD_KEY))
             validators[PASSWORD_KEY]?.map { validate ->
                 if (validate.rule(state.value.password)) {
-                    _state.update {
-                        it.copy(
-                            errors = it.errors.copy(
-                                password = validate.message
-                            )
+                    _effect.update {
+                        PasswordResult.ValidationError(
+                            key = PASSWORD_KEY,
+                            message = validate.message
                         )
                     }
                     anyErrors = true
@@ -162,11 +161,10 @@ internal class PasswordViewModel(
         if (keys.contains(FULL_NAME_KEY))
             validators[FULL_NAME_KEY]?.map { validate ->
                 if (validate.rule(state.value.fullName)) {
-                    _state.update {
-                        it.copy(
-                            errors = it.errors.copy(
-                                fullName = validate.message
-                            )
+                    _effect.update {
+                        PasswordResult.ValidationError(
+                            key = FULL_NAME_KEY,
+                            message = validate.message
                         )
                     }
                     anyErrors = true
@@ -175,6 +173,45 @@ internal class PasswordViewModel(
             }
 
         return anyErrors.not()
+    }
+
+    private fun updateFieldWithErrorMessage(action: PasswordAction.ShowFieldError) {
+        if(action.field == USER_KEY)
+            _state.update {
+                it.copy(
+                    errors = it.errors.copy(
+                        email = action.message
+                    )
+                )
+            }
+
+        if(action.field == PASSWORD_KEY)
+            _state.update {
+                it.copy(
+                    errors = it.errors.copy(
+                        email = action.message
+                    )
+                )
+            }
+
+        if(action.field == FULL_NAME_KEY)
+            _state.update {
+                it.copy(
+                    errors = it.errors.copy(
+                        email = action.message
+                    )
+                )
+            }
+
+        if(action.field == "server") {
+            _state.update {
+                it.copy(
+                    errors = it.errors.copy(
+                        server = action.message
+                    )
+                )
+            }
+        }
     }
 
 }
