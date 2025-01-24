@@ -65,6 +65,7 @@ dependencies {
         implementation("com.github.lavinou.startpoint-android:core")
         implementation("com.github.lavinou.startpoint-android:auth")
         implementation("com.github.lavinou.startpoint-android:auth-password")
+        implementation("com.github.lavinou.startpoint-android:auth-biometric")
     }
 
 //    implementation(project(":startpoint:auth:passkey"))

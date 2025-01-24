@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.dokka)
+    `maven-publish`
 }
 
 android {
@@ -70,4 +72,50 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.android.test.ext.junit)
     androidTestImplementation(libs.android.test.espresso)
+}
+
+//Include jar with the lib's KDoc HTML.
+val kdocJar by tasks.registering(Jar::class) {
+    val htmlTask = tasks["dokkaHtml"]
+    dependsOn(htmlTask)
+
+    // Create the Jar from the generated HTML files.
+    from(htmlTask)
+    archiveClassifier.set("javadoc")
+}
+
+val releaseAar by tasks.registering(Jar::class) {
+    val build = tasks["build"]
+    dependsOn(build)
+    from(build)
+    archiveClassifier.set("releaseaar")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("release") {
+            artifact(kdocJar)
+            artifact(releaseAar)
+            artifact("${layout.buildDirectory.get().asFile.path}/outputs/aar/biometric-release.aar")
+            groupId = "com.github.lavinou.startpoint-android"
+            artifactId = "auth-biometric"
+            version = libs.versions.startpoint.get()
+
+            pom {
+                withXml {
+                    val dependenciesNode = asNode().appendNode("dependencies")
+                    configurations.api.get().allDependencies.forEach {
+                        if (it.group != null && it.version != null) {
+                            val dependencyNode = dependenciesNode.appendNode("dependency")
+                            dependencyNode.appendNode("groupId", it.group)
+                            dependencyNode.appendNode("artifactId", it.name)
+                            dependencyNode.appendNode("version", it.version)
+                            dependencyNode.appendNode("scope", "compile")
+                        }
+                    }
+                }
+            }
+        }
+
+    }
 }
