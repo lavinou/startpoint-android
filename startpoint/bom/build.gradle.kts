@@ -20,10 +20,12 @@ dependencies {
             api(project(":startpoint:core"))
             api(project(":startpoint:auth"))
             api(project(":startpoint:auth:password"))
+            api(project(":startpoint:auth:biometric"))
         } else {
             api("com.github.lavinou.startpoint-android:core:$releaseVersion")
             api("com.github.lavinou.startpoint-android:auth:$releaseVersion")
             api("com.github.lavinou.startpoint-android:auth-password:$releaseVersion")
+            api("com.github.lavinou.startpoint-android:auth-biometric:$releaseVersion")
             // more versions here
         }
     }
