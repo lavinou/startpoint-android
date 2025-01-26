@@ -20,7 +20,7 @@ espresso = "3.6.1"
 ktor = "2.3.11"
 dokka = "2.0.0"
 coil = "3.0.4"
-startpoint = "0.4.0"
+startpoint = "0.4.1"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx"}
