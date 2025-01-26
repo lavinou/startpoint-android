@@ -13,7 +13,7 @@ data class BiometricIdentifier(
 
         @SuppressLint("HardwareIds")
         fun deviceId(from: Context): String {
-            return Settings.Secure.getString(from.getContentResolver(),
+            return Settings.Secure.getString(from.contentResolver,
                 Settings.Secure.ANDROID_ID)
         }
     }

@@ -42,7 +42,10 @@ class BiometricCredential private constructor(
         internal fun createFrom(data: Bundle): BiometricCredential {
             val deviceId = data.getString(BUNDLE_KEY_DEVICE_ID)!!
             val signedChallenge = data.getString(BUNDLE_KEY_SIGNED_CHALLENGE)!!
-            return BiometricCredential(id = BiometricIdentifier(deviceId), signedChallenge = signedChallenge)
+            return BiometricCredential(
+                id = BiometricIdentifier(deviceId),
+                signedChallenge = signedChallenge
+            )
         }
     }
 }

@@ -11,6 +11,7 @@ import io.ktor.client.request.header
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.url
+import io.ktor.http.HttpStatusCode
 
 class AppUserSessionBackend(
     private val client: HttpClient,
@@ -29,14 +30,19 @@ class AppUserSessionBackend(
 
     override suspend fun user(token: SPAuthToken?): AppUser {
         return if (!token?.accessToken.isNullOrBlank()) {
-            val user: User = client.get {
+            val response = client.get {
                 url("$baseUrl/account/user/")
                 headers {
                     header("Content-Type", "application/json")
                     header("Authorization", "Bearer ${token?.accessToken}")
                 }
-            }.body()
-            AppUser.AuthenticatedUser(id = "${user.pk}", value = user)
+            }
+            if(response.status == HttpStatusCode.OK) {
+                val user: User = response.body()
+                AppUser.AuthenticatedUser(id = "${user.pk}", value = user)
+            }
+            else
+                AppUser.AnonymousUser()
         } else {
             AppUser.AnonymousUser()
         }

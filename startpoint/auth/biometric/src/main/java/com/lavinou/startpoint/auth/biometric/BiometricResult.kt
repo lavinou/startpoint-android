@@ -12,7 +12,9 @@ sealed interface BiometricResult {
         val throwable: Throwable
     ) : BiometricResult
 
-    data object RegistrationSuccess: BiometricResult
+    data object RegistrationSuccess : BiometricResult
 
-    data object OnUserCancelled: BiometricResult
+    data object BiometricNotRegistered : BiometricResult
+
+    data object OnUserCancelled : BiometricResult
 }

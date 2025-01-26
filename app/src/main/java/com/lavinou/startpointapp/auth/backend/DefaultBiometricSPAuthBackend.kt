@@ -15,9 +15,10 @@ import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 
-class DefaultBiometricSPAuthBackend (
+class DefaultBiometricSPAuthBackend(
     private val client: HttpClient,
     private val baseUrl: String
 ) : BiometricSPAuthBackend {
@@ -32,10 +33,12 @@ class DefaultBiometricSPAuthBackend (
             headers {
                 header("Content-Type", "application/json")
             }
-            setBody(mapOf(
-                "device_id" to id.device,
-                "signed_challenge" to signedChallenge
-            ))
+            setBody(
+                mapOf(
+                    "device_id" to id.device,
+                    "signed_challenge" to signedChallenge
+                )
+            )
         }.body<TokenResponse>()
 
         return object : SPAuthToken {
@@ -65,12 +68,15 @@ class DefaultBiometricSPAuthBackend (
             headers {
                 header("Content-Type", "application/json")
             }
-            setBody(mapOf(
-                "device_id" to id.device,
-                "public_key" to id.publicKey
-            ))
+            setBody(
+                mapOf(
+                    "device_id" to id.device,
+                    "public_key" to id.publicKey
+                )
+            )
         }
-        return response.status == HttpStatusCode.Created
+        Log.d("BiometricSPAuthBackend", response.bodyAsText())
+        return response.status == HttpStatusCode.Created || response.status == HttpStatusCode.OK
     }
 
     override suspend fun unregister(id: BiometricIdentifier): Boolean {
@@ -79,9 +85,11 @@ class DefaultBiometricSPAuthBackend (
             headers {
                 header("Content-Type", "application/json")
             }
-            setBody(mapOf(
-                "device_id" to id.device
-            ))
+            setBody(
+                mapOf(
+                    "device_id" to id.device
+                )
+            )
         }
         return response.status == HttpStatusCode.OK
     }
@@ -92,9 +100,11 @@ class DefaultBiometricSPAuthBackend (
             headers {
                 header("Content-Type", "application/json")
             }
-            setBody(mapOf(
-                "device_id" to id.device
-            ))
+            setBody(
+                mapOf(
+                    "device_id" to id.device
+                )
+            )
         }.body()
 
         return response.challenge

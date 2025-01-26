@@ -11,7 +11,7 @@ import java.security.PrivateKey
 import java.security.Signature
 import java.security.spec.ECGenParameterSpec
 
-class BiometricSecurity {
+internal class BiometricSecurity {
 
     companion object {
         fun generateKeyPair(alias: String): KeyPair? {

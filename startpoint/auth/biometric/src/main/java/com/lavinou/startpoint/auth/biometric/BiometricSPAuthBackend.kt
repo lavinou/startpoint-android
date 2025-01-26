@@ -3,7 +3,7 @@ package com.lavinou.startpoint.auth.biometric
 import com.lavinou.startpoint.auth.backend.SPAuthenticationBackend
 import com.lavinou.startpoint.auth.biometric.credentials.BiometricCredential
 
-interface BiometricSPAuthBackend: SPAuthenticationBackend {
+interface BiometricSPAuthBackend : SPAuthenticationBackend {
 
     override val type: String
         get() = BiometricCredential.TYPE

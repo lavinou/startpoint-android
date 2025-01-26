@@ -9,8 +9,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import com.lavinou.startpoint.auth.SPAuth
 import com.lavinou.startpoint.auth.biometric.Biometric
+import com.lavinou.startpoint.auth.biometric.BiometricIdentifier
 import com.lavinou.startpoint.auth.biometric.core.getActivityOrNull
-import com.lavinou.startpoint.auth.biometric.credentials.BiometricCredential
+import com.lavinou.startpoint.auth.biometric.presentation.action.BiometricAction
+import com.lavinou.startpoint.auth.navigation.SPAuthNextAction
+import com.lavinou.startpoint.auth.navigation.nextActionNavigateTo
 import com.lavinou.startpoint.auth.providerOrNull
 import kotlinx.serialization.Serializable
 
@@ -20,7 +23,7 @@ object BiometricSignIn
 @Serializable
 object BiometricRegistration
 
-fun NavGraphBuilder.biometricGraph(
+internal fun NavGraphBuilder.biometricGraph(
     auth: SPAuth,
     navController: NavController
 ) {
@@ -35,17 +38,37 @@ fun NavGraphBuilder.biometricGraph(
             val activity = LocalContext.current.getActivityOrNull() as FragmentActivity
             biometric.BiometricPromptDialog(
                 activity,
-                navController,
-                onSuccess = { id, sign ->
-                    val credential = BiometricCredential(id, sign)
-                    auth.authenticate(credential)
+                onNextAction = { action ->
+                    when (action) {
+                        is SPAuthNextAction.NavigateTo -> {
+                            navController.nextActionNavigateTo(action)
+                        }
+
+                        else -> Unit
+                    }
+                },
+                onBiometricResult = { result ->
+                    biometric.viewModel.dispatch(
+                        BiometricAction.Authenticate(
+                            result = result,
+                            deviceId = BiometricIdentifier.deviceId(activity),
+                            auth = auth
+                        )
+                    )
                 }
             )
         }
 
         composable<BiometricRegistration> {
+            val fragment = LocalContext.current.getActivityOrNull() as FragmentActivity
             biometric.BiometricRegistrationScreen(
-                navHostController = navController
+                fragment = fragment,
+                onCancel = {
+                    navController.popBackStack()
+                },
+                onNavigate = { route ->
+                    navController.nextActionNavigateTo(route)
+                }
             )
         }
     }

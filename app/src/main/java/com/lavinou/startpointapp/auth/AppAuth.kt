@@ -3,6 +3,7 @@ package com.lavinou.startpointapp.auth
 import android.content.Context
 import com.lavinou.startpoint.StartPointConfiguration
 import com.lavinou.startpoint.auth.SPAuth
+import com.lavinou.startpoint.auth.backend.model.SPAuthToken
 import com.lavinou.startpoint.auth.biometric.Biometric
 import com.lavinou.startpoint.auth.biometric.BiometricResult
 import com.lavinou.startpoint.auth.biometric.navigation.BiometricSignIn
@@ -30,6 +31,7 @@ import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
+import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -69,22 +71,36 @@ fun StartPointConfiguration.installAuth(
 
                 refreshTokens {
                     val token = appStorage.retrieve()
-                    val response = client.post {
-                        headers {
-                            header("Content-Type", "application/json")
-                        }
-                        url("http://$domain:8000/account/token/refresh/")
-                        setBody(
-                            mapOf(
-                                "refresh" to token.refreshToken
+                    try {
+                        val response = client.post {
+                            headers {
+                                header("Content-Type", "application/json")
+                            }
+                            url("http://$domain:8000/account/token/refresh/")
+                            setBody(
+                                mapOf(
+                                    "refresh" to token.refreshToken
+                                )
                             )
+                            markAsRefreshTokenRequest()
+                        }
+                        if(response.status == HttpStatusCode.OK) {
+                            val updatedToken: RefreshToken = response.body()
+                            BearerTokens(
+                                accessToken = updatedToken.access,
+                                refreshToken = token.refreshToken
+                            )
+                        } else {
+                            throw Exception("TokenExpired")
+                        }
+                    } catch (e: Throwable) {
+                        appStorage.save(null)
+                        val token = SPAuthToken.Default
+                        BearerTokens(
+                            accessToken = token.accessToken,
+                            refreshToken = token.refreshToken
                         )
-                    }.body<RefreshToken>()
-
-                    BearerTokens(
-                        accessToken = response.access,
-                        refreshToken = token.refreshToken
-                    )
+                    }
                 }
             }
         }
@@ -146,6 +162,10 @@ fun StartPointConfiguration.installAuth(
                             route = PasswordSignIn,
                             keepBackStack = false
                         )
+                    }
+
+                    is BiometricResult.BiometricNotRegistered -> {
+                        SPAuthNextAction.NavigateTo(PasswordSignIn)
                     }
 
                     is BiometricResult.Failure -> {

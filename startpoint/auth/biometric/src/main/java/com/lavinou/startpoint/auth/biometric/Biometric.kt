@@ -3,42 +3,28 @@ package com.lavinou.startpoint.auth.biometric
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.lavinou.startpoint.attribute.AttributeKey
 import com.lavinou.startpoint.auth.SPAuth
 import com.lavinou.startpoint.auth.SPAuthProvider
-import com.lavinou.startpoint.auth.backend.model.SPAuthToken
 import com.lavinou.startpoint.auth.biometric.core.BiometricSecurity
-import com.lavinou.startpoint.auth.biometric.core.getActivityOrNull
 import com.lavinou.startpoint.auth.biometric.navigation.biometricGraph
-import com.lavinou.startpoint.auth.coreui.header.AuthHeader
-import com.lavinou.startpoint.auth.coreui.image.AsyncImage
+import com.lavinou.startpoint.auth.biometric.presentation.BiometricViewModel
+import com.lavinou.startpoint.auth.biometric.presentation.action.BiometricAction
+import com.lavinou.startpoint.auth.biometric.presentation.component.BiometricRegistrationContent
+import com.lavinou.startpoint.auth.biometric.presentation.effect.BiometricEffect
 import com.lavinou.startpoint.auth.navigation.SPAuthNextAction
-import com.lavinou.startpoint.auth.navigation.nextActionNavigateTo
 import com.lavinou.startpoint.auth.provider
 import com.lavinou.startpoint.dsl.StartPointDsl
 import com.lavinou.startpoint.navigation.MainContent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import java.util.concurrent.Executor
 
 /**
@@ -51,6 +37,11 @@ class Biometric(
     private val configuration: BiometricConfiguration
 ) {
 
+    internal val viewModel = BiometricViewModel(
+        backend = configuration.backend ?: error("Biometric backend cannot be null"),
+        security = BiometricSecurity()
+    )
+
     private val promptInfo = BiometricPrompt.PromptInfo.Builder()
         .setTitle(configuration.title)
         .setSubtitle(configuration.subTitle)
@@ -61,7 +52,6 @@ class Biometric(
     private fun createPrompt(
         fragment: FragmentActivity,
         executor: Executor,
-        scope: CoroutineScope,
         onCancel: () -> Unit,
         onSuccess: (BiometricPrompt.AuthenticationResult) -> Unit
     ): BiometricPrompt {
@@ -72,7 +62,6 @@ class Biometric(
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     super.onAuthenticationSucceeded(result)
                     onSuccess(result)
-
                 }
 
                 override fun onAuthenticationFailed() {
@@ -96,150 +85,104 @@ class Biometric(
     @Composable
     internal fun BiometricPromptDialog(
         fragment: FragmentActivity,
-        navController: NavController,
-        onSuccess: suspend (BiometricIdentifier, String) -> SPAuthToken,
-        modifier: Modifier = Modifier
+        onNextAction: (SPAuthNextAction) -> Unit,
+        onBiometricResult: (BiometricPrompt.AuthenticationResult) -> Unit,
     ) {
 
-        val scope = rememberCoroutineScope()
         val manager = BiometricManager.from(fragment)
         val executor = ContextCompat.getMainExecutor(fragment)
         manager.canAuthenticate(BIOMETRIC_STRONG)
+
         val prompt = createPrompt(
             fragment = fragment,
             executor = executor,
-            scope = scope,
             onCancel = {
                 val action = configuration.onResult?.invoke(BiometricResult.OnUserCancelled)
-                when (action) {
-                    is SPAuthNextAction.NavigateTo -> {
-                        navController.nextActionNavigateTo(action)
-                    }
-
-                    else -> Unit
-                }
-
+                    ?: SPAuthNextAction.NavigateTo(MainContent)
+                onNextAction(action)
             },
-            onSuccess = { result ->
-                scope.launch {
-                    val id = BiometricIdentifier(
-                        device = BiometricIdentifier.deviceId(fragment)
-                    )
-                    val challenge = configuration.backend?.challenge(
-                        id = id
-                    )
-                    val signedChallenge = BiometricSecurity.signChallenge(
-                        "test",
-                        challenge?.toByteArray() ?: "".toByteArray(),
-                        result.cryptoObject
-                    )
-                    signedChallenge?.let {
-                        val token = onSuccess(id, it)
-                        val action = configuration.onResult?.invoke(
-                            BiometricResult.Success(token)
-                        )
-                            ?: SPAuthNextAction.NavigateTo(MainContent)
-                        when (action) {
-                            is SPAuthNextAction.NavigateTo -> {
-                                navController.nextActionNavigateTo(action)
-                            }
-
-                            else -> Unit
-                        }
-                    }
-                }
-            }
+            onSuccess = onBiometricResult
         )
+        val effect by viewModel.effect.collectAsState()
 
-        val cryptoObject = BiometricSecurity.getCryptoObject("test")
-        cryptoObject?.let {
-            prompt.authenticate(promptInfo, cryptoObject)
+        LaunchedEffect(Unit) {
+            val cryptoObject = BiometricSecurity.getCryptoObject("test")
+            cryptoObject?.let {
+                prompt.authenticate(promptInfo, cryptoObject)
+            } ?: run {
+                val action = configuration.onResult?.invoke(BiometricResult.BiometricNotRegistered)
+                    ?: SPAuthNextAction.NavigateTo(MainContent)
+                onNextAction(action)
+            }
         }
+
+        LaunchedEffect(effect) {
+            when (effect) {
+                is BiometricEffect.Success -> {
+                    val token = (effect as BiometricEffect.Success).token
+                    val action = configuration.onResult?.invoke(BiometricResult.Success(token))
+                        ?: SPAuthNextAction.NavigateTo(MainContent)
+
+                    onNextAction(action)
+                    viewModel.dispatch(BiometricAction.Reset)
+                }
+
+                else -> Unit
+            }
+        }
+
     }
 
     @Composable
     internal fun BiometricRegistrationScreen(
-        navHostController: NavController,
+        fragment: FragmentActivity,
+        onCancel: () -> Unit,
+        onNavigate: (SPAuthNextAction.NavigateTo) -> Unit,
         modifier: Modifier = Modifier
     ) {
 
-        val fragment = LocalContext.current.getActivityOrNull() as FragmentActivity
-        val scope = rememberCoroutineScope()
-        val manager = BiometricManager.from(fragment)
         val executor = ContextCompat.getMainExecutor(fragment)
 
         val prompt = createPrompt(
             fragment = fragment,
             executor = executor,
-            scope = scope,
-            onCancel = {
-                navHostController.popBackStack()
-            },
+            onCancel = onCancel,
             onSuccess = { result ->
-                scope.launch {
-                    val key = BiometricSecurity.getPublicKey("test")
-                    key?.let {
-                        configuration.backend?.register(
-                            id = BiometricIdentifier(
-                                device = BiometricIdentifier.deviceId(fragment)
-                            )
-                        )
-                    } ?: run {
-                        BiometricSecurity.generateKeyPair("test")
-                        val publicKey = BiometricSecurity.getPublicKey("test")
-                        configuration.backend?.register(
-                            id = BiometricIdentifier(
-                                device = BiometricIdentifier.deviceId(fragment),
-                                publicKey = publicKey
-                            )
-                        )
-                    }
-                    val action =
-                        configuration.onResult?.invoke(BiometricResult.RegistrationSuccess)
-                            ?: SPAuthNextAction.NavigateTo(
-                                MainContent
-                            )
-                    when (action) {
-                        is SPAuthNextAction.NavigateTo -> {
-                            navHostController.nextActionNavigateTo(action)
-                        }
-
-                        else -> Unit
-                    }
-                }
+                viewModel.dispatch(
+                    BiometricAction.Register(
+                        result = result,
+                        deviceId = BiometricIdentifier.deviceId(fragment)
+                    )
+                )
             }
         )
 
+        val effect by viewModel.effect.collectAsState()
 
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            AuthHeader(
-                onBack = {
-                    navHostController.popBackStack()
-                },
-                title = "Biometric Registration"
-            )
+        LaunchedEffect(effect) {
+            when (effect) {
+                is BiometricEffect.RegistrationSuccess -> {
+                    val action = configuration.onResult?.invoke(BiometricResult.RegistrationSuccess)
+                        ?: SPAuthNextAction.NavigateTo(MainContent)
+                    when (action) {
+                        is SPAuthNextAction.NavigateTo -> onNavigate(action)
+                        else -> Unit
+                    }
+                    viewModel.dispatch(BiometricAction.Reset)
+                }
 
-            AsyncImage(
-                configuration.image,
-                colorFilter = ColorFilter.tint(Color.White)
-            )
-
-            Button(
-                onClick = {
-                    prompt.authenticate(promptInfo)
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Register Biometric")
+                else -> Unit
             }
-
         }
+
+        BiometricRegistrationContent(
+            onCancel = onCancel,
+            onRegisterClick = {
+                prompt.authenticate(promptInfo)
+            },
+            image = configuration.image,
+            modifier = modifier
+        )
     }
 
     @StartPointDsl
