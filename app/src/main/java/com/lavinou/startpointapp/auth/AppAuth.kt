@@ -176,7 +176,6 @@ fun StartPointConfiguration.installAuth(
                         )
                     }
                 }
-
             }
         }
     }

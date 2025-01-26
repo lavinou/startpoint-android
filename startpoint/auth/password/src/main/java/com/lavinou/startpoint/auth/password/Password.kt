@@ -8,7 +8,6 @@ import androidx.navigation.NavHostController
 import com.lavinou.startpoint.attribute.AttributeKey
 import com.lavinou.startpoint.auth.SPAuth
 import com.lavinou.startpoint.auth.SPAuthProvider
-import com.lavinou.startpoint.auth.backend.model.SPAuthToken
 import com.lavinou.startpoint.auth.navigation.SPAuthNextAction
 import com.lavinou.startpoint.auth.navigation.nextActionNavigateTo
 import com.lavinou.startpoint.auth.password.model.PasswordValidator
@@ -16,10 +15,8 @@ import com.lavinou.startpoint.auth.password.navigation.password
 import com.lavinou.startpoint.auth.password.presentation.PasswordSignInContent
 import com.lavinou.startpoint.auth.password.presentation.PasswordSignUpContent
 import com.lavinou.startpoint.auth.password.presentation.action.PasswordAction
-import com.lavinou.startpoint.auth.password.presentation.effect.PasswordEffect
 import com.lavinou.startpoint.auth.password.presentation.viewmodel.PasswordViewModel
 import com.lavinou.startpoint.dsl.StartPointDsl
-import com.lavinou.startpoint.navigation.MainContent
 
 class Password internal constructor(
     private val backend: PasswordSPAuthBackend,
@@ -44,17 +41,21 @@ class Password internal constructor(
         LaunchedEffect(key1 = effect.value, block = {
             val result = effect.value
             result?.let {
-                when(val action = onResult?.invoke(result)) {
+                when (val action = onResult?.invoke(result)) {
                     is SPAuthNextAction.NavigateTo -> {
                         passwordViewModel.dispatch(PasswordAction.ResetForm)
                         navHostController.nextActionNavigateTo(action)
                     }
+
                     is SPAuthNextAction.FieldMessage -> {
-                        passwordViewModel.dispatch(PasswordAction.ShowFieldError(
-                            field = action.field,
-                            message = action.message
-                        ))
+                        passwordViewModel.dispatch(
+                            PasswordAction.ShowFieldError(
+                                field = action.field,
+                                message = action.message
+                            )
+                        )
                     }
+
                     else -> Unit
                 }
             }
