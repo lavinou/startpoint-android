@@ -3,6 +3,7 @@ package com.lavinou.startpointapp.auth
 import android.content.Context
 import com.lavinou.startpoint.StartPointConfiguration
 import com.lavinou.startpoint.auth.SPAuth
+import com.lavinou.startpoint.auth.auth
 import com.lavinou.startpoint.auth.backend.model.SPAuthToken
 import com.lavinou.startpoint.auth.biometric.Biometric
 import com.lavinou.startpoint.auth.biometric.BiometricResult
@@ -14,11 +15,13 @@ import com.lavinou.startpoint.auth.password.navigation.PasswordSignUp
 import com.lavinou.startpoint.auth.storage.DefaultSPAuthStorage
 import com.lavinou.startpoint.navigation.MainContent
 import com.lavinou.startpointapp.R
+import com.lavinou.startpointapp.analytics.Analytics
 import com.lavinou.startpointapp.auth.backend.AppUserSessionBackend
 import com.lavinou.startpointapp.auth.backend.DefaultBiometricSPAuthBackend
 import com.lavinou.startpointapp.auth.backend.DefaultPasswordSPAuthBackend
 import com.lavinou.startpointapp.auth.result.resultHandlers
 import com.lavinou.startpointapp.auth.validation.passwordValidators
+import com.lavinou.startpointapp.networking.Networking
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
@@ -122,7 +125,7 @@ fun StartPointConfiguration.installAuth(
         baseUrl = "http://$domain:8000"
     )
 
-    install(SPAuth) {
+    install(SPAuth, dependencies = listOf(Analytics, Networking)) {
 
         title = "Welcome"
 

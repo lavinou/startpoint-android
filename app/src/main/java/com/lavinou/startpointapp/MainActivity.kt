@@ -1,7 +1,6 @@
 package com.lavinou.startpointapp
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,9 +13,12 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.rememberNavController
 import com.lavinou.startpoint.StartPointScaffold
+import com.lavinou.startpoint.auth.SPAuth
 import com.lavinou.startpoint.rememberStartPoint
+import com.lavinou.startpointapp.analytics.Analytics
 import com.lavinou.startpointapp.auth.installAuth
 import com.lavinou.startpointapp.navigation.AppNavHost
+import com.lavinou.startpointapp.networking.Networking
 import com.lavinou.startpointapp.ui.theme.StartPointAppTheme
 
 class MainActivity : FragmentActivity() {
@@ -28,7 +30,16 @@ class MainActivity : FragmentActivity() {
             val navHostController = rememberNavController()
 
             val startPoint = rememberStartPoint {
+
+                install(Networking)
+
                 installAuth(this@MainActivity)
+
+                install(Analytics, dependencies = listOf(
+                    Networking
+                ))
+
+
             }
 
             StartPointAppTheme {

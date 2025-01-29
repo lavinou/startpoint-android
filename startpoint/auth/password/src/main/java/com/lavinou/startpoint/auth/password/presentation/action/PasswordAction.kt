@@ -2,7 +2,7 @@ package com.lavinou.startpoint.auth.password.presentation.action
 
 import com.lavinou.startpoint.auth.SPAuth
 
-internal sealed interface PasswordAction {
+sealed interface PasswordAction {
 
     data class OnViewLoad(
         val loading: Boolean

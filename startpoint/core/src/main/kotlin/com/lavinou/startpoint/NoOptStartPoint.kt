@@ -16,7 +16,7 @@ internal class NoOptStartPoint : StartPoint {
         get() = Attributes(false)
 
     override val config: StartPointConfiguration
-        get() = StartPointConfiguration()
+        get() = error("Using No Opt StartPoint")
 
     override val installedPlugins: List<StartPointPlugin<*, *>>
         get() = emptyList()

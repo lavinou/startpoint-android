@@ -21,6 +21,7 @@ import com.lavinou.startpoint.dsl.StartPointDsl
 class Password internal constructor(
     private val backend: PasswordSPAuthBackend,
     private val validators: Map<String, List<PasswordValidator>>,
+    private val screens: PasswordScreenProvider,
     private val onResult: ((PasswordResult) -> SPAuthNextAction)? = null
 ) {
 
@@ -82,6 +83,21 @@ class Password internal constructor(
             onDispatchAction = passwordViewModel::dispatch,
             isValid = passwordViewModel::isValid
         )
+    }
+
+    @Composable
+    internal fun ForgotPasswordContent() {
+        screens?.ForgotPasswordScreen()
+    }
+
+    @Composable
+    internal fun VerifyEmailContent() {
+        screens?.VerifyEmailScreen()
+    }
+
+    @Composable
+    internal fun ConfirmPasswordResetContent() {
+        screens?.ConfirmPasswordResetScreen()
     }
 
     @StartPointDsl

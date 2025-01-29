@@ -12,7 +12,7 @@ internal class AndroidStartPoint(
 
     private val _installedPlugins: MutableList<StartPointPlugin<*, *>> = mutableListOf()
 
-    override val config: StartPointConfiguration = StartPointConfiguration()
+    override val config: StartPointConfiguration = StartPointConfiguration(current = this)
 
     override val attributes: Attributes = Attributes(concurrent = true)
 

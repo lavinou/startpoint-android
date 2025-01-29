@@ -3,6 +3,7 @@ package com.lavinou.startpoint.auth.password
 import com.lavinou.startpoint.auth.backend.model.SPAuthToken
 import com.lavinou.startpoint.auth.navigation.SPAuthNextAction
 import com.lavinou.startpoint.auth.password.model.PasswordValidator
+import com.lavinou.startpoint.auth.password.screen.DefaultPasswordScreenProvider
 import com.lavinou.startpoint.dsl.StartPointDsl
 import com.lavinou.startpoint.navigation.MainContent
 
@@ -12,6 +13,8 @@ public class PasswordConfiguration {
     var onResult: ((PasswordResult) -> SPAuthNextAction)? = null
 
     var backend: PasswordSPAuthBackend? = null
+
+    var screens: PasswordScreenProvider = DefaultPasswordScreenProvider()
 
     private val validators = mutableMapOf<String, MutableList<PasswordValidator>>()
 
@@ -32,7 +35,8 @@ public class PasswordConfiguration {
         return Password(
             backend = backend,
             validators = validators,
-            onResult = onResult
+            onResult = onResult,
+            screens = screens
         )
     }
 }

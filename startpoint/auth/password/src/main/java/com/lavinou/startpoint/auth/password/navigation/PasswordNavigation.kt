@@ -24,6 +24,9 @@ internal object ForgotPassword
 @Serializable
 internal object ConfirmPasswordReset
 
+@Serializable
+internal object VerifyEmail
+
 internal fun NavGraphBuilder.password(
     startPointAuth: SPAuth,
     navHostController: NavHostController
@@ -53,10 +56,16 @@ internal fun NavGraphBuilder.password(
                 onDispatchAction = password.passwordViewModel::dispatch,
                 isValid = password.passwordViewModel::isValid
             )
+            password.ForgotPasswordContent()
         }
 
         composable<ConfirmPasswordReset>(deepLinks = listOf()) {
             ConfirmPasswordResetContent(navHostController = navHostController)
+            password.ConfirmPasswordResetContent()
+        }
+
+        composable<VerifyEmail> {
+            password.VerifyEmailContent()
         }
     }
 }
