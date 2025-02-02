@@ -1,6 +1,8 @@
 package com.lavinou.startpoint
 
 import android.content.Context
+import androidx.compose.runtime.Composable
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavHostController
 import com.lavinou.startpoint.attribute.Attributes
 
@@ -45,4 +47,11 @@ interface StartPoint {
      * @param plugin The plugin instance to be added.
      */
     fun addInstalledPlugin(plugin: StartPointPlugin<*, *>)
+
+    /**
+     * Connects the current [NavHostController] for the current StartPointScaffold being used.
+     * This must be called before calling the [StartPointScaffold] else it will thrown an error
+     * @param controller Current [NavHostController] to attach
+     */
+    fun attachNavHostController(controller: NavHostController)
 }

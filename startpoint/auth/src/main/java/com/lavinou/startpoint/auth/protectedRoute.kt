@@ -1,6 +1,7 @@
 package com.lavinou.startpoint.auth
 
 import android.app.Activity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
@@ -21,7 +22,7 @@ inline fun <reified T : SPAuthUser<*>> NavController.protectedRoute(
     val startPoint = LocalStartPoint.current
     val auth = startPoint.plugin(SPAuth)
     val isAuthenticated by startPoint.userSession<T>().isAuthenticated.collectAsState()
-    val context = (LocalContext.current as? Activity)
+    val context = LocalActivity.current
 
     if (isAuthenticated != startPoint.userSession<T>().isLoggedIn()) {
         Column {

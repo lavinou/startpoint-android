@@ -24,4 +24,8 @@ internal class NoOptStartPoint : StartPoint {
     override fun addInstalledPlugin(plugin: StartPointPlugin<*, *>) {
         // no-op
     }
+
+    override fun attachNavHostController(controller: NavHostController) {
+        // no-op
+    }
 }

@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.rememberNavController
+import com.lavinou.startpoint.AndroidStartPoint
 import com.lavinou.startpoint.StartPointScaffold
 import com.lavinou.startpoint.auth.SPAuth
 import com.lavinou.startpoint.rememberStartPoint
@@ -26,21 +27,17 @@ class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val startPoint = AndroidStartPoint(this) {
+            installAuth(this@MainActivity)
+
+            install(Analytics)
+            install(Networking)
+        }
+
         setContent {
             val navHostController = rememberNavController()
+            startPoint.attachNavHostController(rememberNavController())
 
-            val startPoint = rememberStartPoint {
-
-                install(Networking)
-
-                installAuth(this@MainActivity)
-
-                install(Analytics, dependencies = listOf(
-                    Networking
-                ))
-
-
-            }
 
             StartPointAppTheme {
                 StartPointScaffold(startPoint = startPoint) {
