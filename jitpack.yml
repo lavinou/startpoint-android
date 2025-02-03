@@ -1,5 +1,5 @@
-jdk:
-  - openjdk17
+jitpack:
+  jdk: 17
 install:
   - ./gradlew clean
 build:
