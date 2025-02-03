@@ -1,9 +1,6 @@
 jitpack:
-  jdk: 17  # Explicitly request Java 17
-
+  jdk: 17
 install:
-  - export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which javac))))  # Set JAVA_HOME manually
-  - java -version  # Print Java version to confirm it's 17
   - ./gradlew clean
 build:
   - ./gradlew build --stacktrace --info  # Builds the project
