@@ -1,6 +1,6 @@
-jitpack:
-  jdk: 17
 install:
+  - jdk:
+    - openjdk17
   - ./gradlew clean
 build:
   - ./gradlew build --stacktrace --info  # Builds the project
