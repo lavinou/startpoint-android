@@ -21,7 +21,9 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "StartPointApp"
-include(":app")
+if (System.getProperty("EXCLUDE_APP") == null) {
+    include(":app")
+}
 include(":startpoint")
 include(":startpoint:bom")
 include(":startpoint:core")
