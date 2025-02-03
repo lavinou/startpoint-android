@@ -1,4 +1,10 @@
 jdk:
   - openjdk17
 install:
-  - ./publishToMavenLocal.sh
+  - ./gradlew clean
+build:
+  - ./gradlew build --stacktrace --info  # Builds the project
+test:
+  - ./gradlew testDebugUnitTest --stacktrace  # Unit tests for debug build
+publish:
+  - ./publishToMavenLocal
