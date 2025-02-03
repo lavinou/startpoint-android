@@ -1,8 +1,4 @@
+jdk:
+  - openjdk17
 install:
-  - ./gradlew clean -DEXCLUDE_APP=true -Porg.gradle.java.home=/home/jitpack/tools/jdk17 --stacktrace
-build:
-  - ./gradlew build -DEXCLUDE_APP=true -Porg.gradle.java.home=/home/jitpack/tools/jdk17 --stacktrace --info  # Builds the project
-test:
-  - ./gradlew testDebugUnitTest DEXCLUDE_APP=true -Porg.gradle.java.home=/home/jitpack/tools/jdk17 --stacktrace  # Unit tests for debug build
-publish:
-  - ./publishToMavenLocal
+  - ./publishToMavenLocal.sh
