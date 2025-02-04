@@ -1,4 +1,5 @@
 
+sh ./gradlew clean
 sh ./gradlew startpoint:core:publishToMavenLocal
 sh ./gradlew startpoint:auth:core-ui:publishToMavenLocal
 sh ./gradlew startpoint:auth:publishToMavenLocal
